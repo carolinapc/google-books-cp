@@ -85,10 +85,9 @@ class Search extends React.Component {
 
         <h3>Results</h3>
         {this.state.books.length > 0 ? 
-          <BookList books={this.state.books} />
+          <BookList saveBook={this.saveBook} books={this.state.books} />
           : "No books were found"
         }
-        
       </div>
     );
   }
