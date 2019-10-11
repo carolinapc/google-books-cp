@@ -4,7 +4,7 @@ class Saved extends React.Component {
   state = {  }
   render() { 
     return (
-      <div>Book Search</div>
+      <div>Saved Books</div>
     );
   }
 }
