@@ -93,6 +93,7 @@ class Search extends React.Component {
               placeholder="Book Title"
               aria-label="Book Title"
               aria-describedby="btn-search"
+              autoComplete="off"
               onChange={this.handleInputChange}
             />
             <div className="input-group-append">
