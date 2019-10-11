@@ -32,7 +32,7 @@ const BookList = props => {
       {props.books.map(book => {
         const { id, authors, title, description, image, link } = book;
         return (
-          <div className="card" key={id}>
+          <div className="card shadow-sm bg-light" key={id}>
             <div className="card-body">
               <h5 className="card-title">{title}</h5>
               <div className="wrap-button">
