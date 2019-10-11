@@ -2,13 +2,24 @@ import React from 'react';
 import GoogleApi from '../../utils/GoogleBooksAPI';
 import API from '../../utils/API';
 import BookList from '../../components/BookList';
+import PageContainer from '../../components/PageContainer';
 
 class Search extends React.Component {
   state = {
     search: "",
-    books: []
+    books: [],
+    booksSaved: [],
+    notFoundMsg: ""
   }
   
+  componentDidMount = () => {
+    API.getBooks()
+      .then(res => {
+        this.setState({ booksSaved: res.data });
+      })
+      .catch(err => console.log(err));
+  }
+
   onSubmit = event => {
     event.preventDefault();
 
@@ -16,17 +27,22 @@ class Search extends React.Component {
     GoogleApi.getBooks(this.state.search)
       .then(res => {
         
-        if (res.data.totalItems !== 0) {
-
+        if (res.data.totalItems > 0) {
           let books = res.data.items.map(book => {
             const { authors, title, description, imageLinks, infoLink } = book.volumeInfo;
+            const image = imageLinks ? imageLinks.thumbnail : "https://via.placeholder.com/150x200/C5C5C5/000000?text=no+image";
+            
+            //check if the book was saved and get its _id (db id)
+            const bookSaved = this.state.booksSaved.filter(bSaved => bSaved.id === book.id);
+            const _id = bookSaved.length > 0 ? bookSaved[0]._id : "";
             
             return {
+              _id,
               id: book.id,
               title,
               authors: authors.join(", "),
               description,
-              image: imageLinks.thumbnail,
+              image,
               link: infoLink
             }
           });
@@ -34,19 +50,28 @@ class Search extends React.Component {
           this.setState({ books });  
         }
         else {
-          this.setState({ books: [] });  
+          this.setState({ books: [], notFoundMsg: "No books were found" });  
         }
       })
       .catch(err => {
-        console.log(err);
-        this.setState({ books: [] });
+        this.setState({ books: [], notFoundMsg: "No books were found" });
       });
     
   }
 
   saveBook = book => {
+    delete book._id;
     API.saveBook(book)
-      .then(() => console.log("book saved!"))
+      .then((res) => {
+        const books = this.state.books.map(b => {
+          if (b.id === book.id) {
+            b._id = res.data._id;
+          }
+          return b;
+        });
+
+        this.setState({ books });
+      })
       .catch(err => console.log(err));
   }
 
@@ -57,8 +82,7 @@ class Search extends React.Component {
 
   render() { 
     return (
-      <div className="container">
-        <h3>Book Search</h3>
+      <PageContainer title="Book Search">
 
         <form onSubmit={this.onSubmit}>
           <div className="input-group mb-3">
@@ -83,12 +107,11 @@ class Search extends React.Component {
           </div>
         </form>
 
-        <h3>Results</h3>
         {this.state.books.length > 0 ? 
-          <BookList saveBook={this.saveBook} books={this.state.books} />
-          : "No books were found"
+          <BookList type="search" saveBook={this.saveBook} books={this.state.books} />
+          : this.state.notFoundMsg
         }
-      </div>
+      </PageContainer>
     );
   }
 }
