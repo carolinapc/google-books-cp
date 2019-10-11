@@ -1,5 +1,6 @@
 import React from 'react';
 import GoogleApi from '../../utils/GoogleBooksAPI';
+import API from '../../utils/API';
 import BookList from '../../components/BookList';
 
 class Search extends React.Component {
@@ -14,12 +15,26 @@ class Search extends React.Component {
     //search books on google api
     GoogleApi.getBooks(this.state.search)
       .then(res => {
-        console.log(res.data.items);
-        if (res.data.totalItems === 0) {
-          this.setState({ books: [] });  
+        
+        if (res.data.totalItems !== 0) {
+
+          let books = res.data.items.map(book => {
+            const { authors, title, description, imageLinks, infoLink } = book.volumeInfo;
+            
+            return {
+              id: book.id,
+              title,
+              authors: authors.join(", "),
+              description,
+              image: imageLinks.thumbnail,
+              link: infoLink
+            }
+          });
+          
+          this.setState({ books });  
         }
         else {
-          this.setState({ books: res.data.items });
+          this.setState({ books: [] });  
         }
       })
       .catch(err => {
@@ -27,6 +42,12 @@ class Search extends React.Component {
         this.setState({ books: [] });
       });
     
+  }
+
+  saveBook = book => {
+    API.saveBook(book)
+      .then(() => console.log("book saved!"))
+      .catch(err => console.log(err));
   }
 
   handleInputChange = event => {
@@ -56,7 +77,7 @@ class Search extends React.Component {
                 className="btn btn-outline-secondary"
                 id="btn-search"
               >
-                Search
+                <i className="fas fa-search"></i> Search
               </button>
             </div>
           </div>
