@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 import io from "socket.io-client";
 
-
 //Stateless Components
 import NavBar from "./components/Navbar";
 import Jumbotron from "./components/Jumbotron";
@@ -23,7 +22,7 @@ class App extends Component {
   
   componentDidMount = () => {
     console.log(window.location.port);
-    let socket = io("http://localhost");
+    let socket = io("http://localhost:3001");
     socket.on("save_book", msg => {
       this.setState({ broadcastMsg: msg });
     });

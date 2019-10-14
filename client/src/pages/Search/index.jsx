@@ -1,4 +1,5 @@
 import React from 'react';
+import GoogleApi from '../../utils/GoogleAPI';
 import API from '../../utils/API';
 import BookList from '../../components/BookList';
 import PageContainer from '../../components/PageContainer';
@@ -24,7 +25,7 @@ class Search extends React.Component {
     event.preventDefault();
 
     //search books on google api
-    API.getFromGoogle(this.state.search)
+    GoogleApi.getBooks(this.state.search)
       .then(res => {
         
         if (res.data.totalItems > 0) {
@@ -72,7 +73,7 @@ class Search extends React.Component {
 
         this.setState({ books });
         
-        const socket = io("http://localhost");
+        const socket = io("http://localhost:3001");
         socket.emit("save_book", `The book ${book.title} was saved!`);
       })
       .catch(err => console.log(err));
