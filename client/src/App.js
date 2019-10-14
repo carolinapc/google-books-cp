@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
-import io from "socket.io-client/dist/socket.io";
+import io from "socket.io-client";
 
 //Stateless Components
 import NavBar from "./components/Navbar";
@@ -21,8 +21,9 @@ class App extends Component {
   }
   
   componentDidMount = () => {
-    let socket = io();
-    socket.on("save_book", msg => {
+    let socket = io("https://google-books-cp.herokuapp.com/");
+    
+    socket.on("book_saved", msg => {
       this.setState({ broadcastMsg: msg });
     });
   }

@@ -3,7 +3,7 @@ import GoogleApi from '../../utils/GoogleAPI';
 import API from '../../utils/API';
 import BookList from '../../components/BookList';
 import PageContainer from '../../components/PageContainer';
-import io from "socket.io-client/dist/socket.io";
+import io from "socket.io-client";
 
 class Search extends React.Component {
   state = {
@@ -73,7 +73,7 @@ class Search extends React.Component {
 
         this.setState({ books });
         
-        const socket = io();
+        const socket = io("https://google-books-cp.herokuapp.com/");
         socket.emit("save_book", `The book ${book.title} was saved!`);
       })
       .catch(err => console.log(err));
