@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
-//import io from "socket.io-client";
+import io from "socket.io-client/dist/socket.io";
 
 //Stateless Components
 import NavBar from "./components/Navbar";
@@ -21,10 +21,10 @@ class App extends Component {
   }
   
   componentDidMount = () => {
-    // let socket = io("http://localhost:3001");
-    // socket.on("save_book", msg => {
-    //   this.setState({ broadcastMsg: msg });
-    // });
+    let socket = io();
+    socket.on("save_book", msg => {
+      this.setState({ broadcastMsg: msg });
+    });
   }
 
   render() {
