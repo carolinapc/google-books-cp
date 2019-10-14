@@ -1,6 +1,6 @@
 const express = require("express");
-const http = require('http');
-const socketIo = require('socket.io');
+//const http = require('http');
+//const socketIo = require('socket.io');
 const path = require("path");
 
 const PORT = process.env.PORT || 3001;
@@ -27,21 +27,21 @@ app.get("*", (req, res) => {
 });
 
 
-const server = http.createServer(app);
-const io = socketIo(server);
+//const server = http.createServer(app);
+//const io = socketIo(server);
 
 
 // Connect to the Mongo DB
 mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/googlebooks");
 
-io.on("connection", socket => {
-  //broadcast msg when a book is saved
-  socket.on("save_book", msg => {
-    io.emit("save_book", msg);
-  });
-});
+// io.on("connection", socket => {
+//   //broadcast msg when a book is saved
+//   socket.on("save_book", msg => {
+//     io.emit("save_book", msg);
+//   });
+// });
 
-server.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`🌎 ==> API server now on port ${PORT}!`);
   
   
