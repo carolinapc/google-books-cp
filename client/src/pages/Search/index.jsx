@@ -1,5 +1,4 @@
 import React from 'react';
-import GoogleApi from '../../utils/GoogleBooksAPI';
 import API from '../../utils/API';
 import BookList from '../../components/BookList';
 import PageContainer from '../../components/PageContainer';
@@ -25,7 +24,7 @@ class Search extends React.Component {
     event.preventDefault();
 
     //search books on google api
-    GoogleApi.getBooks(this.state.search)
+    API.getFromGoogle(this.state.search)
       .then(res => {
         
         if (res.data.totalItems > 0) {
