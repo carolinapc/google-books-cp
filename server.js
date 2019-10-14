@@ -31,7 +31,6 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 
-
 // Connect to the Mongo DB
 mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/googlebooks");
 
