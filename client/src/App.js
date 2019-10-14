@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
+import io from "socket.io-client";
+
 
 //Stateless Components
 import NavBar from "./components/Navbar";
@@ -15,11 +17,24 @@ import "bootstrap/dist/css/bootstrap.css";
 import "./App.css";
 
 class App extends Component {
+  state = {
+    broadcastMsg: ""
+  }
+  
+  componentDidMount = () => {
+    console.log(window.location.port);
+    let socket = io("http://localhost");
+    socket.on("save_book", msg => {
+      this.setState({ broadcastMsg: msg });
+    });
+  }
+
   render() {
     return (
       <Router>
         <NavBar />
         <Jumbotron />
+        {this.state.broadcastMsg}
         <Switch>
           <Route exact path="/" component={Search} />
           <Route exact path="/saved" component={Saved} />

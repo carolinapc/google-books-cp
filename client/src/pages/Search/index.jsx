@@ -3,6 +3,7 @@ import GoogleApi from '../../utils/GoogleBooksAPI';
 import API from '../../utils/API';
 import BookList from '../../components/BookList';
 import PageContainer from '../../components/PageContainer';
+import io from "socket.io-client";
 
 class Search extends React.Component {
   state = {
@@ -71,6 +72,9 @@ class Search extends React.Component {
         });
 
         this.setState({ books });
+        
+        const socket = io("http://localhost");
+        socket.emit("save_book", `The book ${book.title} was saved!`);
       })
       .catch(err => console.log(err));
   }
