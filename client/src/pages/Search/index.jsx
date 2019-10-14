@@ -73,8 +73,8 @@ class Search extends React.Component {
 
         this.setState({ books });
         
-        const socket = io("http://localhost:3001");
-        socket.emit("save_book", `The book ${book.title} was saved!`);
+        // const socket = io("http://localhost:3001");
+        // socket.emit("save_book", `The book ${book.title} was saved!`);
       })
       .catch(err => console.log(err));
   }

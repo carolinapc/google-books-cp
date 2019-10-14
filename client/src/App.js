@@ -21,11 +21,10 @@ class App extends Component {
   }
   
   componentDidMount = () => {
-    console.log(window.location.port);
-    let socket = io("http://localhost:3001");
-    socket.on("save_book", msg => {
-      this.setState({ broadcastMsg: msg });
-    });
+    // let socket = io("http://localhost:3001");
+    // socket.on("save_book", msg => {
+    //   this.setState({ broadcastMsg: msg });
+    // });
   }
 
   render() {
