@@ -5,6 +5,7 @@ const URL = "https://www.googleapis.com/books/v1/volumes?printType=books&key=" +
 
 export default {
   getBooks: query => {
+    console.log(URL + query);
     return axios.get(URL + query);
   }
 }
