@@ -73,7 +73,8 @@ class Search extends React.Component {
 
         this.setState({ books });
         
-        const socket = io("https://google-books-cp.herokuapp.com/");
+        //const socket = io("https://google-books-cp.herokuapp.com/");
+        const socket = io();
         socket.emit("save_book", `The book ${book.title} was saved!`);
       })
       .catch(err => console.log(err));

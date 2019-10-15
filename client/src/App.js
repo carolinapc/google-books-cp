@@ -21,8 +21,10 @@ class App extends Component {
   }
   
   componentDidMount = () => {
-    let socket = io("https://google-books-cp.herokuapp.com/");
-    
+    //let socket = io("https://google-books-cp.herokuapp.com/");
+    console.log(window.location);
+    let socket = io();
+
     socket.on("book_saved", msg => {
       this.setState({ broadcastMsg: msg });
     });

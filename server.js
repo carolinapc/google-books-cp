@@ -27,7 +27,6 @@ const io = socketIO(server);
 
 // socket
 io.on("connect", socket => {
-  console.log("client connected");
   //broadcast msg when a book is saved
   socket.on("save_book", msg => {
     io.emit("book_saved", msg);
