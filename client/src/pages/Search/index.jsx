@@ -27,7 +27,7 @@ class Search extends React.Component {
     //search books on google api
     GoogleApi.getBooks(this.state.search)
       .then(res => {
-        
+
         if (res.data.totalItems > 0) {
           let books = res.data.items.map(book => {
             const { authors, title, description, imageLinks, infoLink } = book.volumeInfo;
