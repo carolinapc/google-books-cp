@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 import io from "socket.io-client";
-import M from "materialize-css";
+import {ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 //Stateless Components
 import NavBar from "./components/Navbar";
@@ -17,9 +18,6 @@ import "bootstrap/dist/css/bootstrap.css";
 import "./App.css";
 
 class App extends Component {
-  state = {
-    broadcastMsg: ""
-  }
   
   componentDidMount = () => {
     
@@ -27,7 +25,9 @@ class App extends Component {
 
     socket.on("book_saved", msg => {
       this.setState({ broadcastMsg: msg });
-      M.toast({ html: this.state.broadcastMsg });
+      toast.info(msg,{
+        position: toast.POSITION.BOTTOM_CENTER
+      });
     });
   }
 
@@ -36,6 +36,7 @@ class App extends Component {
       <Router>
         <NavBar />
         <Jumbotron />
+        <ToastContainer />
         <Switch>
           <Route exact path="/" component={Search} />
           <Route exact path="/saved" component={Saved} />
