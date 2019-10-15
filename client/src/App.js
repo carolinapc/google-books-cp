@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 import io from "socket.io-client";
+import M from "materialize-css";
 
 //Stateless Components
 import NavBar from "./components/Navbar";
@@ -21,12 +22,12 @@ class App extends Component {
   }
   
   componentDidMount = () => {
-    //let socket = io("https://google-books-cp.herokuapp.com/");
-    console.log(window.location);
-    let socket = io();
+    
+    const socket = io();
 
     socket.on("book_saved", msg => {
       this.setState({ broadcastMsg: msg });
+      M.toast({ html: this.state.broadcastMsg });
     });
   }
 
@@ -35,7 +36,6 @@ class App extends Component {
       <Router>
         <NavBar />
         <Jumbotron />
-        {this.state.broadcastMsg}
         <Switch>
           <Route exact path="/" component={Search} />
           <Route exact path="/saved" component={Saved} />
