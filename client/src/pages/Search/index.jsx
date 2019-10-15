@@ -31,8 +31,8 @@ class Search extends React.Component {
         if (res.data.totalItems > 0) {
           let books = res.data.items.map(book => {
             const { authors, title, description, imageLinks, infoLink } = book.volumeInfo;
-            const image = imageLinks ? imageLinks.thumbnail : "https://via.placeholder.com/150x200/C5C5C5/000000?text=no+image";
-            
+            const image = imageLinks ? imageLinks.thumbnail.replace("http:", "https:") : "https://via.placeholder.com/150x200/C5C5C5/000000?text=no+image";
+
             //check if the book was saved and get its _id (db id)
             const bookSaved = this.state.booksSaved.filter(bSaved => bSaved.id === book.id);
             const _id = bookSaved.length > 0 ? bookSaved[0]._id : "";
