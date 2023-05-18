@@ -1,1 +1,25 @@
+name: Testing names for workflow
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: Environment to deploy to
+        default: dev
+        required: true
+        options:
+        - env1
+        - env2
+  
 
+permissions:
+  contents: read
+
+jobs:
+  my-job:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    steps:
+    - name: Testing
+      run: sh |
+        echo "test ${{ github.event.inputs.environment }}"
