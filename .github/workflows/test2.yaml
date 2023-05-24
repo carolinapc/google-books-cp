@@ -1,4 +1,4 @@
-name: Testing names for workflow
+name: Run - Testing names for workflow
 on:
   workflow_dispatch:
     inputs:
