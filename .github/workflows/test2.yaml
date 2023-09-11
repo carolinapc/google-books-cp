@@ -1,25 +1,18 @@
-name: Run - Testing names for workflow
+name: Check - Merge Queue
 on:
-  workflow_dispatch:
-    inputs:
-      environment:
-        type: choice
-        description: Environment to deploy to
-        default: dev
-        required: true
-        options:
-        - env1
-        - env2
+  pull_request:
+    branches:
+      - develop      
+    types:
+      - ['opened', 'reopened', 'synchronize']
   
 
-permissions:
-  contents: read
-
+permissions: write-all
+   
 jobs:
-  my-job:
+  merge-queue:
     runs-on: ubuntu-latest
-    environment: ${{ github.event.inputs.environment }}
     steps:
-    - name: Testing
-      run: sh |
-        echo "test ${{ github.event.inputs.environment }}"
+      - name: Print branch name
+        run: echo "Branch name: ${{ github.head_ref }}"
+      
