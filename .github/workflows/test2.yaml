@@ -14,5 +14,5 @@ jobs:
     steps:
       - name: Print branch name
         run: |
-          echo "Branch name: ${{ github.head_ref }}"
+          echo "Branch name: ${{ github.pull_request.head.ref }}"
       
