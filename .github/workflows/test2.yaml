@@ -3,8 +3,7 @@ on:
   pull_request:
     branches:
       - develop      
-    types:
-      - ['opened', 'reopened', 'synchronize']
+    types: ['opened', 'reopened', 'synchronize']
   
 
 permissions: write-all
@@ -14,5 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Print branch name
-        run: echo "Branch name: ${{ github.head_ref }}"
+        run: |
+          echo "Branch name: ${{ github.head_ref }}"
       
