@@ -29,6 +29,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo workflow_run in ${{ github.event.workflow_run.base.ref }}
+          echo "The base ref of the pull request that triggered this workflow is ${{ github.event.workflow_run.pull_requests[0].base.ref }}"
           
 
