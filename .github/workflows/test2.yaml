@@ -1,4 +1,4 @@
-name: Check - Merge Queue
+name: check-1
 on:
   pull_request:
     branches:
@@ -9,10 +9,10 @@ on:
 permissions: write-all
    
 jobs:
-  merge-queue:
+  check-1:
     runs-on: ubuntu-latest
     steps:
       - name: Print branch name
         run: |
-          echo "Branch name: ${{ github.pull_request.head_ref }}"
+          echo run check-1
       
