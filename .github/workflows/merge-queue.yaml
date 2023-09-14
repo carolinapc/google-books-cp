@@ -1,0 +1,34 @@
+name: Check - Merge Queue
+on:
+  pull_request:
+    branches:
+      - test-mergequeue      
+    types:
+      - labeled
+  workflow_run:
+    workflows: 
+      - check-1
+      - check-2
+    types: [completed]   
+
+permissions: write-all
+   
+jobs:
+  merge-queue-pr-trigger:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo pr base ref ${{ github.event.pull_request.base.ref }}
+          echo ${{ github.event.workflow_run.head_branch }}
+          echo ${{ github.event.workflow_run.name }}
+          
+
+  merge-queue-workflow-trigger:
+    if: ${{ github.event_name == 'workflow_run' }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo workflow_run in ${{ github.event.workflow_run.head_branch }}
+          
+
