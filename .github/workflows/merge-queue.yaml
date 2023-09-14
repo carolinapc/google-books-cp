@@ -3,12 +3,12 @@ on:
   pull_request:
     branches:
       - master      
+      - develop
     types:
       - labeled
   workflow_run:
     workflows: 
       - check-1
-      - check-2
     types: [completed]   
 
 permissions: write-all
