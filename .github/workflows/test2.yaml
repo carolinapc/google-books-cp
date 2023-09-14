@@ -2,7 +2,8 @@ name: check-1
 on:
   pull_request:
     branches:
-      - master      
+      - master    
+      - develop
     types: ['opened', 'reopened', 'synchronize']
   
 
@@ -14,5 +15,6 @@ jobs:
     steps:
       - name: Print branch name
         run: |
-          echo run check-1
+          echo PR labeled in ${{ github.event.pull_request.base.ref }}
+          
       
