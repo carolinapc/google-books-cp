@@ -20,8 +20,7 @@ jobs:
     steps:
       - run: |
           echo pr base ref ${{ github.event.pull_request.base.ref }}
-          echo ${{ github.event.workflow_run.head_branch }}
-          echo ${{ github.event.workflow_run.name }}
+          echo pr number ${{ github.event.pull_request.number }}
           
 
   merge-queue-workflow-trigger:
@@ -29,6 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
+          echo "The PR id that triggered this workflow is ${{ github.event.workflow_run.pull_requests[0].number }}"
           echo "The base ref of the pull request that triggered this workflow is ${{ github.event.workflow_run.pull_requests[0].base.ref }}"
           
 
