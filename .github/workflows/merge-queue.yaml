@@ -21,6 +21,7 @@ jobs:
       - run: |
           echo pr base ref ${{ github.event.pull_request.base.ref }}
           echo pr number ${{ github.event.pull_request.number }}
+          echo ${{ github.event.pull_request.base.ref || github.event.workflow_run.pull_requests[0].base.ref }}
           
 
   merge-queue-workflow-trigger:
