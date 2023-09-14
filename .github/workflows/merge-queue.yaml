@@ -2,7 +2,7 @@ name: Check - Merge Queue
 on:
   pull_request:
     branches:
-      - test-mergequeue      
+      - master      
     types:
       - labeled
   workflow_run:
