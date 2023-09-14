@@ -29,6 +29,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo workflow_run in ${{ github.event.workflow_run.head_branch }}
+          echo workflow_run in ${{ github.event.workflow_run.base.ref }}
           
 
