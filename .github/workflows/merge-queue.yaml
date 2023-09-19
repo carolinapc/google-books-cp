@@ -28,7 +28,7 @@ jobs:
           echo contain bug label: ${{ contains(github.event.pull_request.labels.*.name, 'bug') }}
 
   pr-closed:
-    if: github.event_name == 'pull_request' && github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'bot:merging')
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'bug')
     runs-on: ubuntu-latest
     steps:
       - name: Remove bot:merging label in case it exists
