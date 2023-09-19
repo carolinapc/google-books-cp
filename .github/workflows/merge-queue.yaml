@@ -12,7 +12,7 @@ permissions: write-all
    
 jobs:
   merge-queue-pr-trigger:
-    if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'bot:merging') }}
+    if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'bug') }}
     runs-on: ubuntu-latest
     steps:
       - run: |
