@@ -28,14 +28,14 @@ jobs:
           echo contain bug label: ${{ contains(github.event.pull_request.labels.*.name, 'bug') }}
 
   pr-closed:
-    if: github.event_name == 'pull_request' && github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'bot:merging')
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'bug')
     runs-on: ubuntu-latest
     steps:
-      - name: Remove bot:merging label in case it exists
+      - name: Remove bug label in case it exists
          # add this line to only run the step when the PR is closed
         uses: actions-ecosystem/action-remove-labels@v1
         with:
-          labels: bot:merging
+          labels: bug
           github-token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.pull_request.number }}      
 
