@@ -23,8 +23,9 @@ jobs:
       - run: |
           echo pr number ${{ github.event.pull_request.number }}
           echo pr id ${{ github.event.pull_request.id }}
-          echo pr status ${{ github.event.pull_request.closed }}
-          echo ${{ contains(github.event.pull_request.labels.*.name, 'bug') }}
+          echo event name ${{ github.event_name }}
+          echo event action ${{ github.event.action }}
+          echo contain bug label: ${{ contains(github.event.pull_request.labels.*.name, 'bug') }}
 
   pr-closed:
     if: github.event_name == 'pull_request' && github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'bot:merging')
