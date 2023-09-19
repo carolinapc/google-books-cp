@@ -8,17 +8,36 @@ on:
       - closed
       - opened
       - reopened
+  workflow_run:
+    workflows: [check-1]
+    types: [completed]
 
 permissions: write-all
    
 jobs:
-  merge-queue-pr-trigger:
-    if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'bug') }}
+
+  merge-queue:
+    if: github.event_name == 'workflow_run' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     steps:
       - run: |
           echo pr number ${{ github.event.pull_request.number }}
           echo pr id ${{ github.event.pull_request.id }}
-          echo pr status ${{ github.event.pull_request.closed }}
-          echo ${{ contains(github.event.pull_request.labels.*.name, 'bot:merging') }}
+          echo event name ${{ github.event_name }}
+          echo event action ${{ github.event.action }}
+          echo contain bug label: ${{ contains(github.event.pull_request.labels.*.name, 'bug') }}
+
+  pr-closed:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'bot:merging')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove bot:merging label in case it exists
+         # add this line to only run the step when the PR is closed
+        uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: bot:merging
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}      
+
+  
           
