@@ -8,6 +8,7 @@ on:
       - closed
       - opened
       - reopened
+      - labeled
   workflow_run:
     workflows: [check-1]
     types: [completed]
