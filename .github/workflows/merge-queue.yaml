@@ -19,6 +19,6 @@ jobs:
       - run: |
           echo pr number ${{ github.event.pull_request.number }}
           echo pr id ${{ github.event.pull_request.id }}
-          echo pr status ${{ github.event.pull_request.status }}
+          echo pr status ${{ github.event.pull_request.closed }}
           echo ${{ contains(github.event.pull_request.labels.*.name, 'bot:merging') }}
           
