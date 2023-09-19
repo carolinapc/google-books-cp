@@ -21,4 +21,11 @@ jobs:
           echo pr id ${{ github.event.pull_request.id }}
           echo pr status ${{ github.event.pull_request.closed }}
           echo ${{ contains(github.event.pull_request.labels.*.name, 'bot:merging') }}
+      - name: Remove bot:merging label
+        if: github.event_name == 'pull_request' && github.event.action == 'closed' # add this line to only run the step when the PR is closed
+        uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: bug
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}          
           
