@@ -5,32 +5,19 @@ on:
       - master      
       - develop
     types:
-      - labeled
-  workflow_run:
-    workflows: 
-      - check-1
-    types: [completed]   
+      - closed
+      - opened
 
 permissions: write-all
    
 jobs:
   merge-queue-pr-trigger:
-    if: ${{ github.event_name == 'pull_request' }}
+    if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'bot:merging') }}
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo pr base ref ${{ github.event.pull_request.base.ref }}
           echo pr number ${{ github.event.pull_request.number }}
-          echo ${{ github.event.pull_request.base.ref || github.event.workflow_run.pull_requests[0].base.ref }}
+          echo pr id ${{ github.event.pull_request.id }}
+          echo pr status ${{ github.event.pull_request.status }}
+          echo ${{ contains(github.event.pull_request.labels.*.name, 'bot:merging') }}
           
-
-  merge-queue-workflow-trigger:
-    if: ${{ github.event_name == 'workflow_run' }}
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          echo "The PR id that triggered this workflow is ${{ github.event.workflow_run.pull_requests[0].number }}"
-          echo "The base ref of the pull request that triggered this workflow is ${{ github.event.workflow_run.pull_requests[0].base.ref }}"
-          echo "There are ${{ github.event.workflow_run.pull_requests[1].number }} PRs related to this workflow_run"
-          echo ${{ github.event.pull_request.base.ref || github.event.workflow_run.pull_requests[0].base.ref }}
-
