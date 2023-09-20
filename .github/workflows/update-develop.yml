@@ -40,7 +40,7 @@ jobs:
 
       - name: Create pull request
         run: |
-          git request-pull develop-test https://github.com/carolinapc/google-books.git https://github.com/${{ github.repository }}.git merge-branch
+          git request-pull develop-test https://github.com/${{ github.repository }}.git merge-branch
       #     curl -X POST \
       #       -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
       #       -H "Accept: application/vnd.github.v3+json" \
