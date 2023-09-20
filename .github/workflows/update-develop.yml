@@ -8,18 +8,26 @@ on:
 jobs:
   update-develop:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
           ref: develop-test
           fetch-depth: 0
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v3
-        with:
-          title: Update Develop Branch
-          body: |
-            This pull request updates the develop branch with changes from the master branch.
-          branch: update-develop
-          commit-message: Update Develop Branch
-          #delete-branch: true
+
+      - name: Create new branch
+        run: |
+          git checkout -b merge-branch
+
+      - name: Update new branch from master
+        run: |
+          git pull --rebase origin master
+
+      - name: Create pull request
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/pulls \
+            -d '{"title": "Update Develop Branch", "head": "update-develop", "base": "develop", "body": "This pull request updates the develop branch with changes from the master branch."}'
