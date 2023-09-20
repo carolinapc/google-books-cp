@@ -22,11 +22,13 @@ jobs:
           git config --global user.email "github-actions@github.com"
           git config --global user.name "Github Actions"
 
-      - name: Create new branch
+      - name: Create merge branch
+        id: create-branch
         run: |
-          export MERGE_BRANCH=merge-branch-$(uuid)
+          MERGE_BRANCH=merge-branch-${{ github.run_id }}
           git checkout -b $MERGE_BRANCH
           git status
+          echo "merge_branch=$MERGE_BRANCH" >> "$GITHUB_OUTPUT"
 
       - name: Update new branch from master
         run: |
@@ -36,7 +38,7 @@ jobs:
       - name: Push changes to merge branch
         uses: ad-m/github-push-action@master
         with:
-          branch: $MERGE_BRANCH
+          branch: steps.create-branch.outputs.merge_branch
           github_token: ${{ secrets.GITHUB_TOKEN }}          
 
       - name: Create pull request
@@ -45,5 +47,5 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/${{ github.repository }}/pulls \
-            -d '{"title": "Update Develop Branch", "head": "$MERGE_BRANCH", "base": "develop-test", "body": "This pull request updates the develop branch with changes from the master branch."}'
+            -d '{"title": "Update Develop Branch", "head": "${{ steps.create-branch.outputs.merge_branch }}", "base": "develop-test", "body": "This pull request updates the develop branch with changes from the master branch."}'
 
