@@ -68,5 +68,5 @@ jobs:
         uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: enhancement
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.CAROL_ACCESS_TOKEN }}
           number: ${{ steps.create-pr.outputs.PR_NUMBER }}
