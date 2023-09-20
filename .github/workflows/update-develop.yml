@@ -25,11 +25,14 @@ jobs:
       - name: Create new branch
         run: |
           git checkout -b merge-branch
+          git status
 
       - name: Update new branch from master
         run: |
+          git status
           git pull --rebase origin master-test
           git commit -am "Update Develop Branch"
+          
 
       - name: Create pull request
         run: |
