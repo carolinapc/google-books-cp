@@ -64,7 +64,6 @@ jobs:
             https://api.github.com/repos/${{ github.repository }}/pulls/${{ steps.create-pr.outputs.PR_NUMBER }}/reviews \
             -d '{"event": "APPROVE", "body": "This pull request was automatically approved for merging using Carol token."}'
 
-
       - name: Add label to pull request to start merging queue
         uses: actions-ecosystem/action-add-labels@v1
         with:
