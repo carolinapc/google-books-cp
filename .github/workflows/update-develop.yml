@@ -22,4 +22,4 @@ jobs:
             This pull request updates the develop branch with changes from the master branch.
           branch: update-develop
           commit-message: Update Develop Branch
-          delete-branch: true
+          #delete-branch: true
