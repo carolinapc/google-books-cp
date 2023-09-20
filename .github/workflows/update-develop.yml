@@ -32,6 +32,11 @@ jobs:
           git status
           git merge origin/master-test
           
+      - name: Push changes to merge branch
+        uses: ad-m/github-push-action@master
+        with:
+          branch: merge-branch
+          github_token: ${{ secrets.GITHUB_TOKEN }}          
           
       - name: Create pull request
         run: |
