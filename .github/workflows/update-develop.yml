@@ -69,8 +69,8 @@ jobs:
         uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: enhancement
-          github-token: ${{ secrets.CAROL_ACCESS_TOKEN }}
-          issue-number: ${{ steps.create-pr.outputs.PR_NUMBER }}
+          github_token: ${{ secrets.CAROL_ACCESS_TOKEN }}
+          number: ${{ steps.create-pr.outputs.PR_NUMBER }}
 
       # - name: Add label to pull request
       #   run: |
