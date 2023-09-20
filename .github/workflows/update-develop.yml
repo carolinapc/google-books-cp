@@ -17,6 +17,10 @@ jobs:
         with:
           ref: develop-test
           fetch-depth: 0
+      - name: Configure credentials
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "Github Actions"
 
       - name: Create new branch
         run: |
