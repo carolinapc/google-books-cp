@@ -24,7 +24,8 @@ jobs:
 
       - name: Create new branch
         run: |
-          git checkout -b merge-branch
+          export MERGE_BRANCH=merge-branch-$(uuid)
+          git checkout -b $MERGE_BRANCH
           git status
 
       - name: Update new branch from master
@@ -35,7 +36,7 @@ jobs:
       - name: Push changes to merge branch
         uses: ad-m/github-push-action@master
         with:
-          branch: merge-branch
+          branch: $MERGE_BRANCH
           github_token: ${{ secrets.GITHUB_TOKEN }}          
 
       - name: Create pull request
@@ -44,6 +45,5 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/${{ github.repository }}/pulls \
-            -d '{"title": "Update Develop Branch", "head": "merge-branch", "base": "develop-test", "body": "This pull request updates the develop branch with changes from the master branch."}'
+            -d '{"title": "Update Develop Branch", "head": "$MERGE_BRANCH", "base": "develop-test", "body": "This pull request updates the develop branch with changes from the master branch."}'
 
-      # git request-pull develop-test https://github.com/${{ github.repository }}.git merge-branch
