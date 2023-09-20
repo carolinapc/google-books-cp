@@ -56,7 +56,9 @@ jobs:
           
           PR_NUMBER=$(echo $PR_RESPONSE | jq -r '.number')
           echo "PR_NUMBER=$PR_NUMBER" >> "$GITHUB_OUTPUT"
-
+          echo $PR_RESPONSE
+          echo $PR_NUMBER
+          
       - name: Approve pull request
         run: |
           curl -X POST \
