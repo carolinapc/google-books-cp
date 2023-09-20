@@ -38,7 +38,7 @@ jobs:
       - name: Push changes to merge branch
         uses: ad-m/github-push-action@master
         with:
-          branch: steps.create-branch.outputs.merge_branch
+          branch: ${{ steps.create-branch.outputs.merge_branch }}
           github_token: ${{ secrets.GITHUB_TOKEN }}          
 
       - name: Create pull request
