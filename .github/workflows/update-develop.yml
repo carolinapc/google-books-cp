@@ -3,23 +3,71 @@ name: Check - Update Develop Branch
 on:
   push:
     branches:
-      - master-test
+      - master
+
+permissions: write-all
+
+env:
+  MERGE_BRANCH: merge-branch-${{ github.run_id }}
 
 jobs:
   update-develop:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          ref: develop-test
+          ref: develop
           fetch-depth: 0
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v3
+      - name: Configure credentials
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "Github Actions"
+
+      - name: Create merge branch
+        id: create-branch
+        run: |
+          git checkout -b ${{ env.MERGE_BRANCH }}
+          git status
+
+      - name: Update new branch from master
+        run: |
+          git status
+          git merge origin/master
+          
+      - name: Push changes to merge branch
+        uses: ad-m/github-push-action@master
         with:
-          title: Update Develop Branch
-          body: |
-            This pull request updates the develop branch with changes from the master branch.
-          branch: update-develop
-          commit-message: Update Develop Branch
-          delete-branch: true
+          branch: ${{ env.MERGE_BRANCH }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}          
+
+      - name: Create pull request
+        id: create-pr
+        run: |
+          PR_RESPONSE=$( curl -X POST \
+          -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/${{ github.repository }}/pulls \
+          -d '{"title": "Update Develop Branch", "head": "${{ env.MERGE_BRANCH }}", "base": "develop", "body": "This pull request updates the develop branch with changes from the master branch."}' )
+          
+          PR_NUMBER=$(echo $PR_RESPONSE | jq -r '.number')
+          echo "PR_NUMBER=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo $PR_RESPONSE
+          echo $PR_NUMBER
+
+      - name: Approve pull request
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.CAROL_ACCESS_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/pulls/${{ steps.create-pr.outputs.PR_NUMBER }}/reviews \
+            -d '{"event": "APPROVE", "body": "This pull request was automatically approved for merging using Carol token."}'
+
+
+      - name: Add label to pull request to start merging queue
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: enhancement
+          github_token: ${{ secrets.CAROL_ACCESS_TOKEN }}
+          number: ${{ steps.create-pr.outputs.PR_NUMBER }}
