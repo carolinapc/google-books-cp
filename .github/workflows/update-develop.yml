@@ -22,6 +22,7 @@ jobs:
           fetch-depth: 0
       - name: Configure credentials
         run: |
+          set -e
           git config --global user.email "github-actions@github.com"
           git config --global user.name "Github Actions"
 
