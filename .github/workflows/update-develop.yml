@@ -45,24 +45,39 @@ jobs:
       - name: Create pull request
         id: create-pr
         run: |
-          PR_RESPONSE=$( curl -X POST \
+          RESPONSE=$( curl -X POST \
           -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           -H "Accept: application/vnd.github.v3+json" \
           https://api.github.com/repos/${{ github.repository }}/pulls \
-          -d '{"title": "Update Develop Branch", "head": "${{ env.MERGE_BRANCH }}", "base": "develop", "body": "This pull request updates the develop branch with changes from the master branch."}' )
+          -d '{"title": "Update Develop Branch", "head": "${{ env.MERGE_BRANCH }}", "base": "develop", "body": "This pull request updates the develop branch with changes from the master branch.", "labels": ["command:queue-for-merging"]}' )
           
-          PR_NUMBER=$(echo $PR_RESPONSE | jq -r '.number')
+          PR_NUMBER=$(echo $RESPONSE | jq -r '.number')
           echo "PR_NUMBER=$PR_NUMBER" >> "$GITHUB_OUTPUT"
-          echo $PR_RESPONSE
-          echo $PR_NUMBER
+          echo $RESPONSE
+          echo PR number: $PR_NUMBER
+
+          if [ -z "${PR_NUMBER}" ]; then
+            echo "PR_NUMBER is empty. Likely an issue with the request to create the PR. Please check the response."
+            exit 1
+          fi
 
       - name: Approve pull request
         run: |
-          curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.CAROL_ACCESS_TOKEN }}" \
+          RESPONSE=$( curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/${{ github.repository }}/pulls/${{ steps.create-pr.outputs.PR_NUMBER }}/reviews \
-            -d '{"event": "APPROVE", "body": "This pull request was automatically approved for merging using Carol token."}'
+            -d '{"event": "APPROVE"}' )
+
+          echo $RESPONSE
+          echo PR review state: $STATE
+
+          STATE=$(echo $RESPONSE | jq -r '.state')
+
+          if [ -z "${STATE}" ]; then
+            echo "STATE is empty. Likely an issue with the request to approve the PR. Please check the response."
+            exit 1
+          fi
 
       - name: Add label to pull request to start merging queue
         uses: actions-ecosystem/action-add-labels@v1
@@ -70,3 +85,12 @@ jobs:
           labels: enhancement
           github_token: ${{ secrets.CAROL_ACCESS_TOKEN }}
           number: ${{ steps.create-pr.outputs.PR_NUMBER }}
+
+      - name: Send email to admin if error occurs
+        if: failure()
+        run: |
+          WORKFLOW_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          WORKFLOW_LOG_URL="${WORKFLOW_URL }}/logs/${{ github.job }}"
+
+          curl -o workflow.log "${WORKFLOW_LOG_URL}"
+          echo "An error occurred in the workflow. Please check the attached log file for more information. Workflow url: ${WORKFLOW_URL}" | mail -s "Error in workflow ${{ github.run_id }}" -a workflow.log carolinapc@gmail.com
