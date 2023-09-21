@@ -1,8 +1,5 @@
 1
 2
-<<<<<<< HEAD
-3
-=======
 3
 4 added in master
->>>>>>> origin/master
+5 added in master
