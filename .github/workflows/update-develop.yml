@@ -30,13 +30,15 @@ jobs:
         id: create-branch
         run: |
           git checkout -b ${{ env.MERGE_BRANCH }}
-          
           git status
 
       - name: Update new branch from master
         run: |
-          git status
-          git merge origin/master
+          RESULT=$(git merge origin/master)
+          
+          if [ $? -ne 0 ]; then
+            git status
+          fi
           
       - name: Push changes to merge branch
         uses: ad-m/github-push-action@master
