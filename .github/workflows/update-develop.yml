@@ -48,7 +48,7 @@ jobs:
             ignoredfileHasConflict=$(git status --short | grep "^UU $fileToIgnore" | wc -l)
 
             # if the conflict was only the ignored file, solve it.
-            if [ $totalConflicted == 1 && $ignoredfileHasConflict == 1 ]; then
+            if [[ $totalConflicted == 1 && $ignoredfileHasConflict == 1 ]]; then
                 echo "Only ${fileToIgnore} get conflicts, so kept ours to solve it."
                 git checkout --ours $fileToIgnore
                 git add $fileToIgnore
