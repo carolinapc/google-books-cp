@@ -40,9 +40,11 @@ jobs:
           if [[ $? -ne 0 ]]; then
             git status
             git checkout --ours -- .github/workflows/update-develop.yml
+            git add .github/workflows/update-develop.yml
+            git commit -m "Fix conflict in update-develop.yml file"
           fi
           
-          
+
       - name: Push changes to merge branch
         uses: ad-m/github-push-action@master
         with:
