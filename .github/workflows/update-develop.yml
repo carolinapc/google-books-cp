@@ -55,11 +55,11 @@ jobs:
           PR_NUMBER=$(echo $RESPONSE | jq -r '.number')
           echo "PR_NUMBER=$PR_NUMBER" >> "$GITHUB_OUTPUT"
           echo $RESPONSE
-          echo PR number is "$PR_NUMBER"
+          echo PR number is $PR_NUMBER
 
           if [[ -z "$PR_NUMBER" ]]; then
             echo "PR_NUMBER is empty. Likely an issue with the request to create the PR. Please check the response."
-            exit 1
+            exit 1;
           fi
 
       - name: Approve pull request
@@ -72,11 +72,11 @@ jobs:
 
           STATE=$(echo $RESPONSE | jq -r '.state')
           echo $RESPONSE
-          echo PR review state is "$STATE"
+          echo PR review state is $STATE
 
           if [[ -z "$STATE" ]]; then
             echo "STATE is empty. Likely an issue with the request to approve the PR. Please check the response."
-            exit 1
+            exit 1;
           fi
 
       - name: Add label to pull request to start merging queue
