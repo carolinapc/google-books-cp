@@ -34,13 +34,26 @@ jobs:
       - name: Update new branch from master
         id: merge-master
         run: |
-          set -e
+          set +e
           fileToIgnore=test-file.txt
           git merge origin/master
-          git status
-          git checkout --ours $fileToIgnore
-          git add $fileToIgnore
-          git commit -m "Fix conflict in $fileToIgnore file by choosing the file in develop."
+          if [ $? -ne 0 ]
+          then
+            # check how many files has conflicts 
+            totalConflicted=$(git status --short | grep "^UU" | wc -l)
+            ignoredfileHasConflict=$(git status --short | grep "^UU $fileToIgnore" | wc -l)
+
+            if [ $totalConflicted == 1 && $ignoredfileHasConflict == 1 ]; then
+                echo "Only ${fileToIgnore} get conflicts, so kept ours to solve it."
+                git checkout --ours $fileToIgnore
+                git add $fileToIgnore
+                git commit -m "Fix conflict in $fileToIgnore file by choosing the file in develop."
+                exit 0;
+            fi
+
+            git status
+            exit 1;
+          fi
           
       - name: Push changes to merge branch
         uses: ad-m/github-push-action@master
