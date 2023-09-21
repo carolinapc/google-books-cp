@@ -56,7 +56,7 @@ jobs:
           echo $RESPONSE
           echo PR number: $PR_NUMBER
 
-          if [[ -z "${PR_NUMBER}" ]]; then
+          if [[ -z "$PR_NUMBER" ]]; then
             echo "PR_NUMBER is empty. Likely an issue with the request to create the PR. Please check the response."
             exit 1
           fi
@@ -74,7 +74,7 @@ jobs:
 
           STATE=$(echo $RESPONSE | jq -r '.state')
 
-          if [[ -z "${STATE}" ]]; then
+          if [[ -z "$STATE" ]]; then
             echo "STATE is empty. Likely an issue with the request to approve the PR. Please check the response."
             exit 1
           fi
