@@ -51,6 +51,7 @@ jobs:
                 exit 0;
             fi
 
+            echo "Couldn't solve conflicts automatically."
             git status
             exit 1;
           fi
