@@ -35,6 +35,7 @@ jobs:
       - name: Update new branch from master
         run: |
           git merge origin/master
+          git status
           
           if [[ $? -ne 0 ]]; then
             git status
