@@ -30,7 +30,6 @@ jobs:
         id: create-branch
         run: |
           git checkout -b ${{ env.MERGE_BRANCH }}
-          
           git status
 
       - name: Update new branch from master
