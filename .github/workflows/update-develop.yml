@@ -33,16 +33,17 @@ jobs:
           git status
 
       - name: Update new branch from master
+        id: merge-master
         run: |
           git merge origin/master
+      - name: 
+        if: steps.merge-master.outcome != 'success'
+        run: |
+          fileToIgnore=test-file.txt
           git status
-
-          if [[ $? -ne 0 ]]; then
-            git status
-            git checkout --ours -- .github/workflows/update-develop.yml
-            git add .github/workflows/update-develop.yml
-            git commit -m "Fix conflict in update-develop.yml file"
-          fi
+          git checkout --ours $fileToIgnore
+          git add $fileToIgnore
+          git commit -m "Fix conflict in $fileToIgnore file by choosing the file in develop."
           
       - name: Push changes to merge branch
         uses: ad-m/github-push-action@master
