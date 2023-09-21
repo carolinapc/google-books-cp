@@ -57,7 +57,7 @@ jobs:
           echo $RESPONSE
           echo PR number is $PR_NUMBER
 
-          if [[ -z "$PR_NUMBER" ]]; then
+          if [[ -z "$PR_NUMBER" || $PR_NUMBER == "null" ]]; then
             echo "PR_NUMBER is empty. Likely an issue with the request to create the PR. Please check the response."
             exit 1;
           fi
@@ -93,4 +93,5 @@ jobs:
           WORKFLOW_LOG_URL="${WORKFLOW_URL }}/logs/${{ github.job }}"
 
           curl -o workflow.log "${WORKFLOW_LOG_URL}"
-          echo "An error occurred in the workflow. Please check the attached log file for more information. Workflow url: ${WORKFLOW_URL}" | mail -s "Error in workflow ${{ github.run_id }}" -a workflow.log carolinapc@gmail.com
+          echo "An error occurred in the workflow. Please check the attached log file for more information. Workflow url: ${WORKFLOW_URL}"
+          mail -s "Error in workflow ${{ github.run_id }}" -a workflow.log carolinapc@gmail.com
