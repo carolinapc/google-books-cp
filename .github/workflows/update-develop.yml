@@ -40,8 +40,7 @@ jobs:
           git merge origin/master
 
           # in case of errors, likely conflicted files
-          if [ $? -ne 0 ]
-          then
+          if [ $? -ne 0 ]; then
             # check how many files has conflicts 
             totalConflicted=$(git status --short | grep "^UU" | wc -l)
 
