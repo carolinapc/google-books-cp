@@ -47,7 +47,7 @@ jobs:
         id: create-pr
         run: |
           RESPONSE=$( curl -X POST \
-          -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          -H "Authorization: Bearer ${{ secrets.GITHUB_INVALID_TOKEN }}" \
           -H "Accept: application/vnd.github.v3+json" \
           https://api.github.com/repos/${{ github.repository }}/pulls \
           -d '{"title": "Update Develop Branch", "head": "${{ env.MERGE_BRANCH }}", "base": "develop", "body": "This pull request updates the develop branch with changes from the master branch.", "labels": ["command:queue-for-merging"]}' )
@@ -65,7 +65,7 @@ jobs:
       - name: Approve pull request
         run: |
           RESPONSE=$( curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Authorization: Bearer ${{ secrets.CAROL_ACCESS_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/${{ github.repository }}/pulls/${{ steps.create-pr.outputs.PR_NUMBER }}/reviews \
             -d '{"event": "APPROVE"}' )
