@@ -36,8 +36,9 @@ jobs:
         run: |
           RESULT=$(git merge origin/master)
           
-          if [ $? -ne 0 ]; then
+          if [[ $? -ne 0 ]]; then
             git status
+            git checkout --ours -- .github/workflows/update-develop.yml
           fi
           
       - name: Push changes to merge branch
