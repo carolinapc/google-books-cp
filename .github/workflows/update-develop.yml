@@ -1,0 +1,98 @@
+# Update develop branch from master every time a push is done in master branch
+name: Check - Update Develop Branch
+on:
+  push:
+    branches:
+      - master
+
+permissions: write-all
+
+env:
+  MERGE_BRANCH: merge-branch-${{ github.run_id }}
+
+jobs:
+  update-develop:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: develop
+          fetch-depth: 0
+      - name: Configure credentials
+        run: |
+          set -e
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "Github Actions"
+
+      - name: Create merge branch
+        id: create-branch
+        run: |
+          git checkout -b ${{ env.MERGE_BRANCH }}
+          git status
+
+      - name: Update new branch from master
+        run: |
+          git status
+          git merge origin/master
+          
+      - name: Push changes to merge branch
+        uses: ad-m/github-push-action@master
+        with:
+          branch: ${{ env.MERGE_BRANCH }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}          
+
+      - name: Create pull request
+        id: create-pr
+        run: |
+          RESPONSE=$( curl -X POST \
+          -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/${{ github.repository }}/pulls \
+          -d '{"title": "Update Develop Branch", "head": "${{ env.MERGE_BRANCH }}", "base": "develop", "body": "This pull request updates the develop branch with changes from the master branch.", "labels": ["command:queue-for-merging"]}' )
+          
+          PR_NUMBER=$(echo $RESPONSE | jq -r '.number')
+          echo "PR_NUMBER=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo $RESPONSE
+          echo PR number is $PR_NUMBER
+
+          if [[ -z "$PR_NUMBER" || $PR_NUMBER == "null" ]]; then
+            echo "PR_NUMBER is empty. Likely an issue with the request to create the PR. Please check the response."
+            exit 1;
+          fi
+
+      - name: Approve pull request
+        run: |
+          RESPONSE=$( curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.CAROL_ACCESS_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/pulls/${{ steps.create-pr.outputs.PR_NUMBER }}/reviews \
+            -d '{"event": "APPROVE"}' )
+
+          STATE=$(echo $RESPONSE | jq -r '.state')
+          echo $RESPONSE
+          echo PR review state is $STATE
+
+          if [[ -z "$STATE" || $STATE == "null" ]]; then
+            echo "STATE is empty. Likely an issue with the request to approve the PR. Please check the response."
+            exit 1;
+          fi
+
+      - name: Add label to pull request to start merging queue
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: enhancement
+          github_token: ${{ secrets.CAROL_ACCESS_TOKEN }}
+          number: ${{ steps.create-pr.outputs.PR_NUMBER }}
+
+      # TODO: create slack app and add the webhook url to secrets - https://www.ravsam.in/blog/collect-form-responses-using-google-apps-script/#creating-a-slack-bot
+      # - name: Notify issue via slack
+      #   if: failure()
+      #   uses: ravsamhq/notify-slack-action@v2
+      #   with:
+      #     status: ${{ job.status }} # required
+      #     message_format: "{emoji} *{workflow}* {status_message} in <{repo_url}|{repo}>. Please check the logs in {workflow_url}"
+      #   env:
+      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required        
+       
