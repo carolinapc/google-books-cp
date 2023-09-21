@@ -22,7 +22,6 @@ jobs:
           fetch-depth: 0
       - name: Configure credentials
         run: |
-          set -e
           git config --global user.email "github-actions@github.com"
           git config --global user.name "Github Actions"
 
@@ -33,16 +32,33 @@ jobs:
           git status
 
       - name: Update new branch from master
+        id: merge-master
         run: |
-          git merge origin/master
-          git status
+          set +e
+          fileToIgnore=test-file.txt
 
-          if [[ $? -ne 0 ]]; then
+          git merge origin/master
+
+          # in case of errors, likely conflicted files
+          if [ $? -ne 0 ]; then
+            # check how many files has conflicts 
+            totalConflicted=$(git status --short | grep "^UU" | wc -l)
+
+            # check whether the ignored file had conflict
+            ignoredfileHasConflict=$(git status --short | grep "^UU $fileToIgnore" | wc -l)
+
+            # if the conflict was only the ignored file, solve it.
+            if [ $totalConflicted == 1 && $ignoredfileHasConflict == 1 ]; then
+                echo "Only ${fileToIgnore} get conflicts, so kept ours to solve it."
+                git checkout --ours $fileToIgnore
+                git add $fileToIgnore
+                git commit -m "Fix conflict in $fileToIgnore file by choosing the file in develop."
+                exit $?;
+            fi
+
+            echo "Couldn't solve conflicts automatically."
             git status
-            git checkout --ours -- .github/workflows/update-develop.yml
-            git add .github/workflows/update-develop.yml
-            git commit -m "Fix conflict in update-develop.yml file"
-            
+            exit 1;
           fi
           
       - name: Push changes to merge branch
