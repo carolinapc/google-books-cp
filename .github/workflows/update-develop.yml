@@ -74,7 +74,7 @@ jobs:
           echo $RESPONSE
           echo PR review state is $STATE
 
-          if [[ -z $STATE ]]; then
+          if [[ -z "$STATE" ]]; then
             echo "STATE is empty. Likely an issue with the request to approve the PR. Please check the response."
             exit 1;
           fi
