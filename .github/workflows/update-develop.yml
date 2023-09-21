@@ -36,11 +36,12 @@ jobs:
         run: |
           git merge origin/master
           git status
-          
+
           if [[ $? -ne 0 ]]; then
             git status
             git checkout --ours -- .github/workflows/update-develop.yml
           fi
+          
           
       - name: Push changes to merge branch
         uses: ad-m/github-push-action@master
