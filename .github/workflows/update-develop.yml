@@ -22,7 +22,6 @@ jobs:
           fetch-depth: 0
       - name: Configure credentials
         run: |
-          set -e
           git config --global user.email "github-actions@github.com"
           git config --global user.name "Github Actions"
 
@@ -35,11 +34,9 @@ jobs:
       - name: Update new branch from master
         id: merge-master
         run: |
-          git merge origin/master
-      - name: 
-        if: steps.merge-master.outcome != 'success'
-        run: |
+          set -e
           fileToIgnore=test-file.txt
+          git merge origin/master
           git status
           git checkout --ours $fileToIgnore
           git add $fileToIgnore
