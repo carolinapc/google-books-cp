@@ -48,7 +48,7 @@ jobs:
                 git checkout --ours $fileToIgnore
                 git add $fileToIgnore
                 git commit -m "Fix conflict in $fileToIgnore file by choosing the file in develop."
-                exit 0;
+                exit $?;
             fi
 
             echo "Couldn't solve conflicts automatically."
