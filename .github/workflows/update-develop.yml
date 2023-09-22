@@ -18,6 +18,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Print branch name
+        run: echo "Branch name: $(basename ${{ github.ref }})"
+
       - name: Checkout code
         uses: actions/checkout@v2
         with:
