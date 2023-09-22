@@ -9,7 +9,6 @@ permissions: write-all
 
 env:
   MERGE_BRANCH: merge-branch-${{ github.run_id }}
-  BRANCH_TO_UPDATE: develop
 
 jobs:
   update-develop:
@@ -19,7 +18,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          ref: ${{ env.BRANCH_TO_UPDATE }}
+          ref: develop
           fetch-depth: 0
       - name: Configure credentials
         run: |
@@ -50,10 +49,10 @@ jobs:
 
             # if the conflict was only the ignored file, solve it.
             if [[ $totalConflicted == 1 && $ignoredfileHasConflict == 1 ]]; then
-                echo "Only ${fileToIgnore} got conflicts, so kept ours (what it is in ${{ env.BRANCH_TO_UPDATE }} branch) to solve it."
+                echo "Only ${fileToIgnore} got conflicts, so kept ours (what it is in develop branch) to solve it."
                 git checkout --ours $fileToIgnore
                 git add $fileToIgnore
-                git commit -m "Fix conflict in $fileToIgnore file by choosing the file in ${{ env.BRANCH_TO_UPDATE }}."
+                git commit -m "Fix conflict in $fileToIgnore file by choosing the file in develop."
                 exit $?;
             fi
 
@@ -75,7 +74,7 @@ jobs:
           -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           -H "Accept: application/vnd.github.v3+json" \
           https://api.github.com/repos/${{ github.repository }}/pulls \
-          -d '{"title": "Update Develop Branch", "head": "${{ env.MERGE_BRANCH }}", "base": "${{ env.BRANCH_TO_UPDATE }}", "body": "This pull request updates ${{ env.BRANCH_TO_UPDATE }} branch with changes from the master branch."' )
+          -d '{"title": "Update Develop Branch", "head": "${{ env.MERGE_BRANCH }}", "base": "develop", "body": "This pull request updates the develop branch with changes from the master branch.", "labels": ["command:queue-for-merging"]}' )
           
           PR_NUMBER=$(echo $RESPONSE | jq -r '.number')
           echo "PR_NUMBER=$PR_NUMBER" >> "$GITHUB_OUTPUT"
@@ -108,11 +107,10 @@ jobs:
         uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: |
-            enhancement
             dependencies
-          github_token: ${{ secrets.CAROL_ACCESS_TOKEN }}
+            enhancement
+          github_token: ${{ secrets.THX_ACCESS_TOKEN }}
           number: ${{ steps.create-pr.outputs.PR_NUMBER }}
-
 
       # TODO: Create slack app and add the webhook url to secrets - https://www.ravsam.in/blog/collect-form-responses-using-google-apps-script/#creating-a-slack-bot
       # - name: Notify issue via slack
