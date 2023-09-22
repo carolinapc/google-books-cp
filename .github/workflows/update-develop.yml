@@ -5,7 +5,7 @@ on:
     branches:
       - master
 
-# need to keep 2 blank lines after permissions assignment (dont know why but that broke the push step not allowing do it with github_token)
+# need to keep 2 blank lines after this permissions assignment (dont know why but without that it breaks the push step not allowing to push with github_token)
 permissions: write-all
 
 
@@ -110,8 +110,8 @@ jobs:
         uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: |
-            dependencies
             enhancement
+            dependencies
           github_token: ${{ secrets.CAROL_ACCESS_TOKEN }}
           number: ${{ steps.create-pr.outputs.PR_NUMBER }}
 
