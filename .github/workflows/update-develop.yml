@@ -109,7 +109,7 @@ jobs:
           labels: |
             command:queue-for-merging
             merge-method:merge
-          github_token: ${{ secrets.THX_ACCESS_TOKEN }}
+          github_token: ${{ secrets.CAROL_ACCESS_TOKEN }}
           number: ${{ steps.create-pr.outputs.PR_NUMBER }}
 
       # TODO: Create slack app and add the webhook url to secrets - https://www.ravsam.in/blog/collect-form-responses-using-google-apps-script/#creating-a-slack-bot
