@@ -42,6 +42,7 @@ jobs:
 
           # in case of errors, likely conflicted files
           if [ $? -ne 0 ]; then
+            set -e
             # check how many files has conflicts 
             totalConflicted=$(git status --short | grep "^UU" | wc -l)
 
