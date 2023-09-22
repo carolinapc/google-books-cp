@@ -7,6 +7,7 @@ on:
 
 permissions: write-all
 
+
 env:
   MERGE_BRANCH: merge-branch-${{ github.run_id }}
 
