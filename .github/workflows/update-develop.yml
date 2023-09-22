@@ -5,6 +5,7 @@ on:
     branches:
       - master
 
+# need to keep 2 blank lines after permissions assignment (dont know why but that broke the push step not allowing do it with github_token)
 permissions: write-all
 
 
