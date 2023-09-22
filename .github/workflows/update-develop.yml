@@ -5,11 +5,10 @@ on:
     branches:
       - master
 
-permissions: write-all
-
-
 env:
   MERGE_BRANCH: merge-branch-${{ github.run_id }}
+
+permissions: write-all
 
 jobs:
   update-develop:
