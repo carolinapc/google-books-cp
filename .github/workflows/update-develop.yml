@@ -5,11 +5,13 @@ on:
     branches:
       - master
 
+# need to keep 2 blank lines after this permissions assignment (dont know why but without that it breaks the push step not allowing to push with github_token)
 permissions: write-all
 
 
 env:
   MERGE_BRANCH: merge-branch-${{ github.run_id }}
+  BRANCH_TO_UPDATE: develop
 
 jobs:
   update-develop:
@@ -19,7 +21,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          ref: develop
+          ref: ${{ env.BRANCH_TO_UPDATE }}
           fetch-depth: 0
       - name: Configure credentials
         run: |
@@ -36,7 +38,7 @@ jobs:
         id: merge-master
         run: |
           set +e
-          fileToIgnore=test-file.txt
+          fileToIgnore=./pom/garden-versions-pom/pom.xml
 
           git merge origin/master
 
@@ -50,10 +52,10 @@ jobs:
 
             # if the conflict was only the ignored file, solve it.
             if [[ $totalConflicted == 1 && $ignoredfileHasConflict == 1 ]]; then
-                echo "Only ${fileToIgnore} get conflicts, so kept ours to solve it."
+                echo "Only ${fileToIgnore} got conflicts, so kept ours (what it is in ${{ env.BRANCH_TO_UPDATE }} branch) to solve it."
                 git checkout --ours $fileToIgnore
                 git add $fileToIgnore
-                git commit -m "Fix conflict in $fileToIgnore file by choosing the file in develop."
+                git commit -m "Fix conflict in $fileToIgnore file by choosing the file in ${{ env.BRANCH_TO_UPDATE }}."
                 exit $?;
             fi
 
@@ -75,7 +77,7 @@ jobs:
           -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           -H "Accept: application/vnd.github.v3+json" \
           https://api.github.com/repos/${{ github.repository }}/pulls \
-          -d '{"title": "Update Develop Branch", "head": "${{ env.MERGE_BRANCH }}", "base": "develop", "body": "This pull request updates the develop branch with changes from the master branch.", "labels": ["command:queue-for-merging"]}' )
+          -d '{"title": "Update Develop Branch", "head": "${{ env.MERGE_BRANCH }}", "base": "${{ env.BRANCH_TO_UPDATE }}", "body": "This pull request updates ${{ env.BRANCH_TO_UPDATE }} branch with changes from master branch."}' )
           
           PR_NUMBER=$(echo $RESPONSE | jq -r '.number')
           echo "PR_NUMBER=$PR_NUMBER" >> "$GITHUB_OUTPUT"
