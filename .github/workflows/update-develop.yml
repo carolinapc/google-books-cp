@@ -106,7 +106,9 @@ jobs:
       - name: Add label to pull request to start merging queue
         uses: actions-ecosystem/action-add-labels@v1
         with:
-          labels: enhancement
+          labels: |
+            enhancement
+            dependencies
           github_token: ${{ secrets.CAROL_ACCESS_TOKEN }}
           number: ${{ steps.create-pr.outputs.PR_NUMBER }}
 
