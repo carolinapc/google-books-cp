@@ -19,7 +19,8 @@ jobs:
 
     steps:
       - name: Print branch name
-        run: echo "Branch name: $(basename ${{ github.ref }})"
+        run: |
+          echo "Branch name: $(basename ${{ github.ref }})"
 
       - name: Checkout code
         uses: actions/checkout@v2
