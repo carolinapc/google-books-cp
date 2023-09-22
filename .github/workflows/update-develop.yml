@@ -7,6 +7,7 @@ on:
 
 permissions: write-all
 
+
 env:
   MERGE_BRANCH: merge-branch-${{ github.run_id }}
 
@@ -35,7 +36,7 @@ jobs:
         id: merge-master
         run: |
           set +e
-          fileToIgnore=./pom/garden-versions-pom/pom.xml
+          fileToIgnore=test-file.txt
 
           git merge origin/master
 
@@ -49,7 +50,7 @@ jobs:
 
             # if the conflict was only the ignored file, solve it.
             if [[ $totalConflicted == 1 && $ignoredfileHasConflict == 1 ]]; then
-                echo "Only ${fileToIgnore} got conflicts, so kept ours (what it is in develop branch) to solve it."
+                echo "Only ${fileToIgnore} get conflicts, so kept ours to solve it."
                 git checkout --ours $fileToIgnore
                 git add $fileToIgnore
                 git commit -m "Fix conflict in $fileToIgnore file by choosing the file in develop."
@@ -107,8 +108,8 @@ jobs:
         uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: |
-            dependencies
             enhancement
+            dependencies
           github_token: ${{ secrets.CAROL_ACCESS_TOKEN }}
           number: ${{ steps.create-pr.outputs.PR_NUMBER }}
 
