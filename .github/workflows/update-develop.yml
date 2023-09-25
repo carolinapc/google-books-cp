@@ -12,9 +12,10 @@ permissions: write-all
 env:
   # name of merge branch to be created
   MERGE_BRANCH: merge-branch-${{ github.run_id }}
+  # name of merge branch in case of conflicts
+  CONFLICTED_MERGE_BRANCH: pending-merge-branch
   # branch to be updated with changes from master
   BRANCH_TO_UPDATE: develop
-  CONFLICTED_MERGE_BRANCH: pending-merge-branch
 
 jobs:
   update-develop:
@@ -64,37 +65,44 @@ jobs:
                 git add $fileToIgnore
                 git commit -m "Fix conflict in $fileToIgnore file by choosing the file in ${{ env.BRANCH_TO_UPDATE }}."
                 echo "CONFLICTS_TO_SOLVE=false" >> "$GITHUB_OUTPUT"
+                echo "ACTUAL_MERGE_BRANCH=${{ env.MERGE_BRANCH }}" >> "$GITHUB_OUTPUT"
+                echo "CREATE_PR=true" >> "$GITHUB_OUTPUT"  
                 exit $?;
             fi
 
+            CREATE_PR=true
             echo "Couldn't solve conflicts automatically. Merge from ${{ github.ref}} was aborted to be manually solved in the branch ${{ env.CONFLICTED_MERGE_BRANCH }}."
             git merge --abort
-            git branch -m ${{ env.MERGE_BRANCH }} ${{ env.CONFLICTED_MERGE_BRANCH }}
+            if [[ $(git branch --list -a origin/test-name | wc -l) == 0 ]]; then
+              echo "Renaming branch ${{ env.MERGE_BRANCH }} to ${{ env.CONFLICTED_MERGE_BRANCH }}, as there is no pending merge branch created yet."
+              git branch -m ${{ env.MERGE_BRANCH }} ${{ env.CONFLICTED_MERGE_BRANCH }}
+              CREATE_PR=false
+            fi
+
+            echo "CREATE_PR=${CREATE_PR}" >> "$GITHUB_OUTPUT"              
             echo "CONFLICTS_TO_SOLVE=true" >> "$GITHUB_OUTPUT"
+            echo "ACTUAL_MERGE_BRANCH=${{ env.CONFLICTED_MERGE_BRANCH }}" >> "$GITHUB_OUTPUT"
             git status
             exit 0;
           fi
       
       
-      - name: Push changes to merge branch
+      - name: Push changes to merge branch if a PR can be created
+        if: steps.update-merge-branch.outputs.CREATE_PR == true
         uses: ad-m/github-push-action@master
         with:
-          branch: ${{ env.MERGE_BRANCH }}
+          branch: ${{ steps.update-merge-branch.outputs.ACTUAL_MERGE_BRANCH }}
           github_token: ${{ secrets.GITHUB_TOKEN }}          
 
       - name: Create pull request
+        if: steps.update-merge-branch.outputs.CREATE_PR == true
         id: create-pr
         run: |
-          HEAD_BRANCH=${{ env.MERGE_BRANCH }}
-          if [[ "${{ steps.update-merge-branch.outputs.CONFLICTS_TO_SOLVE }}" == true ]]; then
-            echo There are conflicts in merge branch, so the pull request will be created but not automatically merged.
-            HEAD_BRANCH=${{ env.CONFLICTED_MERGE_BRANCH }}
-          fi
           RESPONSE=$( curl -X POST \
           -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           -H "Accept: application/vnd.github.v3+json" \
           https://api.github.com/repos/${{ github.repository }}/pulls \
-          -d '{"title": "Update Develop Branch", "head": "${HEAD_BRANCH}", "base": "${{ env.BRANCH_TO_UPDATE }}", "body": "This pull request updates ${{ env.BRANCH_TO_UPDATE }} branch with changes from master branch."}' )
+          -d '{"title": "Update Develop Branch", "head": "${{ steps.update-merge-branch.outputs.ACTUAL_MERGE_BRANCH }}", "base": "${{ env.BRANCH_TO_UPDATE }}", "body": "This pull request updates ${{ env.BRANCH_TO_UPDATE }} branch with changes from master branch."}' )
           
           PR_NUMBER=$(echo $RESPONSE | jq -r '.number')
           echo "PR_NUMBER=$PR_NUMBER" >> "$GITHUB_OUTPUT"
