@@ -21,12 +21,12 @@ jobs:
       - name: Print branch name
         run: |
           echo Branch updated: $(basename ${{ github.ref }})
-          echo Branch to be updated: ${{ env.MERGE_BRANCH }}
+          echo Branch to be updated: ${{ env.BRANCH_TO_UPDATE }}
 
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.ref }}
+          ref: ${{ env.BRANCH_TO_UPDATE }}
           fetch-depth: 0
       - name: Configure credentials
         run: |
@@ -45,7 +45,7 @@ jobs:
           set +e
           fileToIgnore=./test-file.txt
 
-          git merge origin/${{ env.BRANCH_TO_UPDATE }}
+          git merge origin/$(basename ${{ github.ref }})
 
           # in case of errors, likely conflicted files
           if [ $? -ne 0 ]; then
