@@ -26,7 +26,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          ref: ${{ env.BRANCH_TO_UPDATE }}
+          ref: ${{ github.ref }}
           fetch-depth: 0
       - name: Configure credentials
         run: |
@@ -45,7 +45,7 @@ jobs:
           set +e
           fileToIgnore=./test-file.txt
 
-          git merge origin/$(basename ${{ github.ref }})
+          git merge origin/${{ env.BRANCH_TO_UPDATE }}
 
           # in case of errors, likely conflicted files
           if [ $? -ne 0 ]; then
