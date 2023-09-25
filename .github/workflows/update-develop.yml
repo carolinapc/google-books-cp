@@ -45,6 +45,7 @@ jobs:
       - name: Update new branch from ${{ env.BRANCH_TO_UPDATE }}
         id: update-merge-branch
         run: |
+          # set to ignore errors
           set +e
           fileToIgnore=test-file.txt
 
@@ -70,6 +71,7 @@ jobs:
                 exit $?;
             fi
 
+            # set to stop on errors
             set -e
             CREATE_PR=false
             echo "Couldn't solve conflicts automatically. Merge from ${{ github.ref}} was aborted to be manually solved in the branch ${{ env.CONFLICTED_MERGE_BRANCH }}."
@@ -157,7 +159,11 @@ jobs:
       - name: Notify if conflicts
         if: ${{ steps.update-merge-branch.outputs.CONFLICTS_TO_SOLVE == 'true' }}
         run: |
-          echo "There are conflicts in merge branch, so the pull request number ${{ steps.create-pr.outputs.PR_NUMBER }} was created but not automatically merged."
+          RESPONSE=$(curl -X GET -H "Authorization: Bearer ${{ secrets.CAROL_ACCESS_TOKEN }}" https://api.github.com/repos/${{ github.repository }}/pulls?head=${{ env.CONFLICTED_MERGE_BRANCH }})
+          PR_NUMBER=$(echo $RESPONSE | jq -r '.[0].number')
+          PR_URL=$(echo $RESPONSE | jq -r '.[0].html_url')
+          echo "There are conflicts in merge branch, so the pull request number $PR_NUMBER was created but not automatically merged."
+          echo "Here is the link to the PR: ${PR_URL}"
           echo "Please solve the conflicts in the branch ${{ env.CONFLICTED_MERGE_BRANCH }} and then merge it to ${{ env.BRANCH_TO_UPDATE }} branch."
       
       - name: Notify if any errors
