@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: Info
         run: |
-            echo Branch updated (the one that triggers this workflow): $(basename ${{ github.ref }})
+            echo Branch updated: $(basename ${{ github.ref }})
             echo Branch to be updated: ${{ env.BRANCH_TO_UPDATE }}
       - name: Checkout code
         uses: actions/checkout@v2
