@@ -20,7 +20,8 @@ jobs:
     steps:
       - name: Print branch name
         run: |
-          echo Branch name: $(basename ${{ github.ref }})
+          echo Branch updated: $(basename ${{ github.ref }})
+          echo Branch to be updated: ${{ env.MERGE_BRANCH }}
 
       - name: Checkout code
         uses: actions/checkout@v2
