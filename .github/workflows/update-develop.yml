@@ -42,7 +42,7 @@ jobs:
         id: merge-master
         run: |
           set +e
-          fileToIgnore=./pom/garden-versions-pom/pom.xml
+          fileToIgnore=./test-file.txt
 
           git merge origin/master
 
