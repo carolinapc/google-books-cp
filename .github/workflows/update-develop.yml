@@ -70,7 +70,7 @@ jobs:
                 exit $?;
             fi
 
-            set -fix
+            set -e
             CREATE_PR=true
             echo "Couldn't solve conflicts automatically. Merge from ${{ github.ref}} was aborted to be manually solved in the branch ${{ env.CONFLICTED_MERGE_BRANCH }}."
             git merge --abort
