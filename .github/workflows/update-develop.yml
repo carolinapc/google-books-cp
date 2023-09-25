@@ -87,7 +87,7 @@ jobs:
             exit 0;
           fi
       
-      - name: outputs previous step
+      - name: Outputs from previous step
         run: |
           echo "CREATE_PR=${{ steps.update-merge-branch.outputs.CREATE_PR }}"
           echo "ACTUAL_MERGE_BRANCH=${{ steps.update-merge-branch.outputs.ACTUAL_MERGE_BRANCH }}"
