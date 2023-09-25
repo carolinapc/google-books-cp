@@ -87,7 +87,12 @@ jobs:
             exit 0;
           fi
       
-      
+      - name: outputs previous step
+        run: |
+          echo "CREATE_PR=${{ steps.update-merge-branch.outputs.CREATE_PR }}"
+          echo "ACTUAL_MERGE_BRANCH=${{ steps.update-merge-branch.outputs.ACTUAL_MERGE_BRANCH }}"
+          echo "CONFLICTS_TO_SOLVE=${{ steps.update-merge-branch.outputs.CONFLICTS_TO_SOLVE }}"
+
       - name: Push changes to merge branch if a PR can be created
         if: steps.update-merge-branch.outputs.CREATE_PR == true
         uses: ad-m/github-push-action@master
