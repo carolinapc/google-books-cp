@@ -20,12 +20,12 @@ jobs:
     steps:
       - name: Print branch name
         run: |
-          echo "Branch name: $(basename ${{ github.ref }})"
+          echo Branch name: $(basename ${{ github.ref }})
 
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          ref: ${{ env.BRANCH_TO_UPDATE }}
+          ref: ${{ github.ref }}
           fetch-depth: 0
       - name: Configure credentials
         run: |
@@ -38,13 +38,13 @@ jobs:
           git checkout -b ${{ env.MERGE_BRANCH }}
           git status
 
-      - name: Update new branch from master
+      - name: Update new branch from ${{ env.BRANCH_TO_UPDATE }}
         id: merge-master
         run: |
           set +e
           fileToIgnore=./test-file.txt
 
-          git merge origin/master
+          git merge origin/${{ env.BRANCH_TO_UPDATE }}
 
           # in case of errors, likely conflicted files
           if [ $? -ne 0 ]; then
@@ -56,8 +56,8 @@ jobs:
 
             # if the conflict was only the ignored file, solve it.
             if [[ $totalConflicted == 1 && $ignoredfileHasConflict == 1 ]]; then
-                echo "Only ${fileToIgnore} got conflicts, so kept ours (what it is in ${{ env.BRANCH_TO_UPDATE }} branch) to solve it."
-                git checkout --ours $fileToIgnore
+                echo "Only ${fileToIgnore} got conflicts, so kept theirs (what it is in ${{ env.BRANCH_TO_UPDATE }} branch) to solve it."
+                git checkout --theirs $fileToIgnore
                 git add $fileToIgnore
                 git commit -m "Fix conflict in $fileToIgnore file by choosing the file in ${{ env.BRANCH_TO_UPDATE }}."
                 exit $?;
