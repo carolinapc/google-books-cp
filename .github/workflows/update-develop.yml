@@ -26,11 +26,13 @@ jobs:
         run: |
             echo Branch updated: $(basename ${{ github.ref }})
             echo Branch to be updated: ${{ env.BRANCH_TO_UPDATE }}
+
       - name: Checkout code
         uses: actions/checkout@v2
         with:
           ref: ${{ github.ref }}
           fetch-depth: 0
+
       - name: Configure credentials
         run: |
           git config --global user.email "github-actions@github.com"
@@ -47,7 +49,10 @@ jobs:
         run: |
           # set to ignore errors
           set +e
-          fileToIgnore=test-file.txt
+          fileToIgnore=./pom/garden-versions-pom/pom.xml
+          CONFLICTS_TO_SOLVE=false
+          ACTUAL_MERGE_BRANCH=${{ env.MERGE_BRANCH }}
+          CREATE_PR=true
 
           git merge origin/${{ env.BRANCH_TO_UPDATE }}
 
@@ -65,30 +70,31 @@ jobs:
                 git checkout --theirs $fileToIgnore
                 git add $fileToIgnore
                 git commit -m "Fix conflict in $fileToIgnore file by choosing the file in ${{ env.BRANCH_TO_UPDATE }}."
-                echo "CONFLICTS_TO_SOLVE=false" >> "$GITHUB_OUTPUT"
-                echo "ACTUAL_MERGE_BRANCH=${{ env.MERGE_BRANCH }}" >> "$GITHUB_OUTPUT"
-                echo "CREATE_PR=true" >> "$GITHUB_OUTPUT"  
-                exit $?;
-            fi
+            else
+                # set to stop on errors
+                set -e
+                CREATE_PR=false
+                CONFLICTS_TO_SOLVE=true
+                ACTUAL_MERGE_BRANCH=${{ env.CONFLICTED_MERGE_BRANCH }}
 
-            # set to stop on errors
-            set -e
-            CREATE_PR=false
-            echo "Couldn't solve conflicts automatically. Merge from ${{ github.ref}} was aborted to be manually solved in the branch ${{ env.CONFLICTED_MERGE_BRANCH }}."
-            git merge --abort
-            if [[ $(git branch --list -a origin/${{ env.CONFLICTED_MERGE_BRANCH }} | wc -l) == 0 ]]; then
-              echo "Renaming branch ${{ env.MERGE_BRANCH }} to ${{ env.CONFLICTED_MERGE_BRANCH }}, as there is no pending merge branch created yet."
-              git branch -m ${{ env.MERGE_BRANCH }} ${{ env.CONFLICTED_MERGE_BRANCH }}
-              CREATE_PR=true
-            fi
+                echo "Couldn't solve conflicts automatically. Merge from ${{ github.ref}} was aborted to be manually solved in the branch ${{ env.CONFLICTED_MERGE_BRANCH }}."
+                git merge --abort
 
-            echo "CREATE_PR=${CREATE_PR}" >> "$GITHUB_OUTPUT"              
-            echo "CONFLICTS_TO_SOLVE=true" >> "$GITHUB_OUTPUT"
-            echo "ACTUAL_MERGE_BRANCH=${{ env.CONFLICTED_MERGE_BRANCH }}" >> "$GITHUB_OUTPUT"
-            git status
-            exit 0;
+                # check if there is already a pending merge branch created
+                if [[ $(git branch --list -a origin/${{ env.CONFLICTED_MERGE_BRANCH }} | wc -l) == 0 ]]; then
+                  echo "Renaming branch ${{ env.MERGE_BRANCH }} to ${{ env.CONFLICTED_MERGE_BRANCH }}, as there is no pending merge branch created yet."
+                  git branch -m ${{ env.MERGE_BRANCH }} ${{ env.CONFLICTED_MERGE_BRANCH }}
+                  CREATE_PR=true
+                fi
+
+                git status
+            fi
           fi
-      
+
+          echo "CONFLICTS_TO_SOLVE=${CONFLICTS_TO_SOLVE}" >> "$GITHUB_OUTPUT"
+          echo "ACTUAL_MERGE_BRANCH=${ACTUAL_MERGE_BRANCH}" >> "$GITHUB_OUTPUT"
+          echo "CREATE_PR=${CREATE_PR}" >> "$GITHUB_OUTPUT"
+
       - name: Outputs from previous step
         run: |
           echo "CREATE_PR=${{ steps.update-merge-branch.outputs.CREATE_PR }}"
