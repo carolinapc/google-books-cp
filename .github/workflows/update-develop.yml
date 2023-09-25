@@ -74,7 +74,7 @@ jobs:
             CREATE_PR=true
             echo "Couldn't solve conflicts automatically. Merge from ${{ github.ref}} was aborted to be manually solved in the branch ${{ env.CONFLICTED_MERGE_BRANCH }}."
             git merge --abort
-            if [[ $(git branch --list -a origin/test-name | wc -l) == 0 ]]; then
+            if [[ $(git branch --list -a origin/${{ env.CONFLICTED_MERGE_BRANCH }} | wc -l) == 0 ]]; then
               echo "Renaming branch ${{ env.MERGE_BRANCH }} to ${{ env.CONFLICTED_MERGE_BRANCH }}, as there is no pending merge branch created yet."
               git branch -m ${{ env.MERGE_BRANCH }} ${{ env.CONFLICTED_MERGE_BRANCH }}
               CREATE_PR=false
