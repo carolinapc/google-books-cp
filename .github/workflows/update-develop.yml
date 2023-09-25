@@ -94,14 +94,14 @@ jobs:
           echo "CONFLICTS_TO_SOLVE=${{ steps.update-merge-branch.outputs.CONFLICTS_TO_SOLVE }}"
 
       - name: Push changes to merge branch if a PR can be created
-        if: ${{ steps.update-merge-branch.outputs.CREATE_PR == true }}
+        if: ${{ steps.update-merge-branch.outputs.CREATE_PR == 'true' }}
         uses: ad-m/github-push-action@master
         with:
           branch: ${{ steps.update-merge-branch.outputs.ACTUAL_MERGE_BRANCH }}
           github_token: ${{ secrets.GITHUB_TOKEN }}          
 
       - name: Create pull request
-        if: ${{ steps.update-merge-branch.outputs.CREATE_PR == true }}
+        if: ${{ steps.update-merge-branch.outputs.CREATE_PR == 'true' }}
         id: create-pr
         run: |
           RESPONSE=$( curl -X POST \
@@ -121,7 +121,7 @@ jobs:
           fi
 
       - name: Approve pull request automatically if there is no conflicts
-        if: ${{ steps.update-merge-branch.outputs.CONFLICTS_TO_SOLVE == false }}
+        if: ${{ steps.update-merge-branch.outputs.CONFLICTS_TO_SOLVE == 'false' }}
         run: |
           RESPONSE=$( curl -X POST \
             -H "Authorization: Bearer ${{ secrets.CAROL_ACCESS_TOKEN }}" \
@@ -139,7 +139,7 @@ jobs:
           fi
 
       - name: Add label to the pull request to set merge method (merge commit)
-        if: ${{ steps.update-merge-branch.outputs.CREATE_PR == true }}
+        if: ${{ steps.update-merge-branch.outputs.CREATE_PR == 'true' }}
         uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: merge-method:merge
@@ -147,7 +147,7 @@ jobs:
           number: ${{ steps.create-pr.outputs.PR_NUMBER }}
 
       - name: Add label to the pull request to start merging process if there is no conflicts
-        if: ${{ steps.update-merge-branch.outputs.CONFLICTS_TO_SOLVE == false }}
+        if: ${{ steps.update-merge-branch.outputs.CONFLICTS_TO_SOLVE == 'false' }}
         uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: command:queue-for-merging
@@ -155,7 +155,7 @@ jobs:
           number: ${{ steps.create-pr.outputs.PR_NUMBER }}
 
       - name: Notify if conflicts
-        if: ${{ steps.update-merge-branch.outputs.CONFLICTS_TO_SOLVE == true }}
+        if: ${{ steps.update-merge-branch.outputs.CONFLICTS_TO_SOLVE == 'true' }}
         run: |
           echo "There are conflicts in merge branch, so the pull request number ${{ steps.create-pr.outputs.PR_NUMBER }} was created but not automatically merged."
           echo "Please solve the conflicts in the branch ${{ env.CONFLICTED_MERGE_BRANCH }} and then merge it to ${{ env.BRANCH_TO_UPDATE }} branch."
