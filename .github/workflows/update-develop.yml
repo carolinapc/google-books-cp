@@ -10,7 +10,9 @@ permissions: write-all
 
 
 env:
+  # name of merge branch to be created
   MERGE_BRANCH: merge-branch-${{ github.run_id }}
+  # branch to be updated with changes from master
   BRANCH_TO_UPDATE: develop
 
 jobs:
@@ -18,11 +20,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Print branch name
+      - name: Info
         run: |
-          echo Branch updated: $(basename ${{ github.ref }})
-          echo Branch to be updated: ${{ env.BRANCH_TO_UPDATE }}
-
+            echo Branch updated (the one that triggers this workflow): $(basename ${{ github.ref }})
+            echo Branch to be updated: ${{ env.BRANCH_TO_UPDATE }}
       - name: Checkout code
         uses: actions/checkout@v2
         with:
@@ -33,17 +34,16 @@ jobs:
           git config --global user.email "github-actions@github.com"
           git config --global user.name "Github Actions"
 
-      - name: Create merge branch
+      - name: Create merge branch from ${{ github.ref }}
         id: create-branch
         run: |
           git checkout -b ${{ env.MERGE_BRANCH }}
           git status
 
       - name: Update new branch from ${{ env.BRANCH_TO_UPDATE }}
-        id: merge-master
         run: |
           set +e
-          fileToIgnore=./test-file.txt
+          fileToIgnore=test-file.txt
 
           git merge origin/${{ env.BRANCH_TO_UPDATE }}
 
@@ -115,8 +115,8 @@ jobs:
         uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: |
-            enhancement
-            dependencies
+            command:queue-for-merging
+            merge-method:merge
           github_token: ${{ secrets.CAROL_ACCESS_TOKEN }}
           number: ${{ steps.create-pr.outputs.PR_NUMBER }}
 
