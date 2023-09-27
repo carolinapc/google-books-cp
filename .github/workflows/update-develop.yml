@@ -202,7 +202,7 @@ jobs:
           echo "TESTING=yellow" >> "$GITHUB_ENV"
 
       - name: Slack
-        if: ${{ always() && env.TESTING != none }}
+        if: ${{ always() && env.TESTING != 'none' }}
         run: |
           echo "TESTING is ${{ env.TESTING }}"
 
