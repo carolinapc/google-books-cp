@@ -28,6 +28,7 @@ jobs:
         run: |
             echo Branch updated: $(basename ${{ github.ref }})
             echo Branch to be updated: ${{ env.BRANCH_TO_UPDATE }}
+            exit 1;
       
       - name: Creating Env variable
         run: |
@@ -198,6 +199,12 @@ jobs:
         if: failure()
         run: |
           echo "There are errors in the workflow. Please check logs."
+          echo "TESTING=yellow" >> "$GITHUB_ENV"
+
+      - name: Slack
+        if: ${{ always() && env.TESTING != none }}
+        run: |
+          echo "TESTING is ${{ env.TESTING }}"
 
       # TODO: Create slack app and add the webhook url to secrets - https://www.ravsam.in/blog/collect-form-responses-using-google-apps-script/#creating-a-slack-bot
       # - name: Notify issue via slack
@@ -209,10 +216,3 @@ jobs:
       #   env:
       #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required        
        
-  notify:
-    runs-on: ubuntu-latest
-    needs: [update-develop]
-    steps:
-      - name: Printing Env variable if testing is yellow
-        run: |
-          echo "TESTING is ${{ env.TESTING }}"
