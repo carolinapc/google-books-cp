@@ -41,6 +41,12 @@ jobs:
         run: |
           echo "MY_COLOR is ${MY_COLOR}"
           echo "TESTING is ${{ env.TESTING }}"
+      
+      - name: Printing Env variable if testing is yellow
+        if: ${{ env.TESTING == 'yellow' }}
+        run: |
+          echo "MY_COLOR is ${MY_COLOR}"
+          echo "TESTING is ${{ env.TESTING }}"
 
       - name: Checkout code
         uses: actions/checkout@v2
