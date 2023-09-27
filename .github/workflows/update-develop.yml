@@ -26,7 +26,19 @@ jobs:
         run: |
             echo Branch updated: $(basename ${{ github.ref }})
             echo Branch to be updated: ${{ env.BRANCH_TO_UPDATE }}
+      
+      - name: Creating Env variable
+        run: |
+          echo "MY_COLOR=yellow" >> "$GITHUB_ENV"
 
+      - name: Changing Env variable
+        run: |
+          echo "MY_COLOR=blue" >> "$GITHUB_ENV"
+
+      - name: Printing Env variable
+        run: |
+          echo "MY_COLOR is ${MY_COLOR}"
+          
       - name: Checkout code
         uses: actions/checkout@v2
         with:
