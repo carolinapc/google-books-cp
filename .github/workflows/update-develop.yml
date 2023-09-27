@@ -16,6 +16,7 @@ env:
   CONFLICTED_MERGE_BRANCH: pending-merge-branch
   # branch to be updated with changes from master
   BRANCH_TO_UPDATE: develop
+  TESTING: red
 
 jobs:
   update-develop:
@@ -30,6 +31,7 @@ jobs:
       - name: Creating Env variable
         run: |
           echo "MY_COLOR=yellow" >> "$GITHUB_ENV"
+          echo "TESTING=yellow" >> "$GITHUB_ENV"
 
       - name: Changing Env variable
         run: |
@@ -38,7 +40,8 @@ jobs:
       - name: Printing Env variable
         run: |
           echo "MY_COLOR is ${MY_COLOR}"
-          
+          echo "TESTING is ${( env.TESTING }}"
+
       - name: Checkout code
         uses: actions/checkout@v2
         with:
