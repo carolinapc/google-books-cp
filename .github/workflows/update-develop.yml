@@ -206,6 +206,16 @@ jobs:
         run: |
           echo "TESTING is ${{ env.TESTING }}"
 
+      - name: Notify issue via slack
+        if: ${{ always() && env.SLACK_MESSAGE != 'none' }}
+        id: slack
+        uses: ravsamhq/notify-slack-action@v2
+        with:
+          status: ${{ job.status }} # required
+          message_format: "{emoji} *{workflow}* {status_message} in <{repo_url}|{repo}>. Please check the logs in {workflow_url}.\n TESTING:\n ${{ env.SLACK_MESSAGE }}"
+        env:
+          SLACK_WEBHOOK_URL: 1234
+
       # TODO: Create slack app and add the webhook url to secrets - https://www.ravsam.in/blog/collect-form-responses-using-google-apps-script/#creating-a-slack-bot
       # - name: Notify issue via slack
       #   if: failure()
