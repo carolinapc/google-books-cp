@@ -17,6 +17,7 @@ env:
   # branch to be updated with changes from master
   BRANCH_TO_UPDATE: develop
   TESTING: red
+  SUCCESS_MSG: PR NUMBER CREATED ${{ steps.create-pr.outputs.PR_NUMBER }}
 
 jobs:
 
@@ -28,7 +29,7 @@ jobs:
         run: |
             echo Branch updated: $(basename ${{ github.ref }})
             echo Branch to be updated: ${{ env.BRANCH_TO_UPDATE }}
-            exit 1;
+            
       
       - name: Creating Env variable
         run: |
@@ -202,19 +203,12 @@ jobs:
           echo "TESTING=yellow" >> "$GITHUB_ENV"
 
       - name: Slack
-        if: ${{ always() && env.TESTING != 'none' }}
+        if: ${{ always() }}
         run: |
-          echo "TESTING is ${{ env.TESTING }}"
+          echo "PR NUMBER ${{ steps.create-pr.outputs.PR_NUMBER }}"
+          echo ${{ env.SUCCESS_MSG }}
 
-      - name: Notify issue via slack
-        if: ${{ always() && env.SLACK_MESSAGE != 'none' }}
-        id: slack
-        uses: ravsamhq/notify-slack-action@v2
-        with:
-          status: ${{ job.status }} # required
-          message_format: "{emoji} *{workflow}* {status_message} in <{repo_url}|{repo}>. Please check the logs in {workflow_url}.\n TESTING:\n ${{ env.SLACK_MESSAGE }}"
-        env:
-          SLACK_WEBHOOK_URL: 1234
+      
 
       # TODO: Create slack app and add the webhook url to secrets - https://www.ravsam.in/blog/collect-form-responses-using-google-apps-script/#creating-a-slack-bot
       # - name: Notify issue via slack
