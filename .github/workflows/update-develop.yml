@@ -213,6 +213,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [update-develop]
     steps:
-      name: Printing Env variable if testing is yellow
-      run: |
-        echo "TESTING is ${{ env.TESTING }}"
+      - name: Printing Env variable if testing is yellow
+        run: |
+          echo "TESTING is ${{ env.TESTING }}"
