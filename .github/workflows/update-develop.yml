@@ -25,7 +25,7 @@ env:
 jobs:
   update-develop:
     runs-on: ubuntu-latest
-
+    permissions: write-all
     steps:
       - name: Info
         run: |
@@ -219,5 +219,5 @@ jobs:
           mention_users_when: 'failure,warnings'
           icon_warnings: ':warning:'
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required 
+          SLACK_WEBHOOK_URL: test # required 
           
