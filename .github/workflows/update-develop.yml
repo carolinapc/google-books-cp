@@ -1,5 +1,5 @@
 # Update develop branch from master every time a push is done in master branch
-name: Check - Update Develop Branch
+name: Job - Update Develop Branch
 on:
   push:
     branches:
@@ -10,17 +10,22 @@ permissions: write-all
 
 
 env:
+  # branch to be updated with changes from master
+  BRANCH_TO_UPDATE: develop
   # name of merge branch to be created
   MERGE_BRANCH: merge-branch-${{ github.run_id }}
   # name of merge branch in case of conflicts
   CONFLICTED_MERGE_BRANCH: pending-merge-branch
-  # branch to be updated with changes from master
-  BRANCH_TO_UPDATE: develop
+  # message to alert via slack (if it's none, no alert will be sent)
+  SLACK_MESSAGE: default
+  SLACK_MESSAGE_TITLE: default
+  SLACK_MESSAGE_FOOTER: '<{run_url}|View Job>'
+  WORKFLOW_STATUS: success
 
 jobs:
   update-develop:
     runs-on: ubuntu-latest
-
+    permissions: write-all
     steps:
       - name: Info
         run: |
@@ -69,7 +74,7 @@ jobs:
                 echo "Only ${fileToIgnore} got conflicts, so kept theirs (what it is in ${{ env.BRANCH_TO_UPDATE }} branch) to solve it."
                 git checkout --theirs $fileToIgnore
                 git add $fileToIgnore
-                git commit -m "Fix conflict in $fileToIgnore file by choosing the file in ${{ env.BRANCH_TO_UPDATE }}."
+                git commit -m "merge-bot: Fix conflict in ${fileToIgnore} file by choosing the file in ${{ env.BRANCH_TO_UPDATE }} branch"
             else
                 # set to stop on errors
                 set -e
@@ -116,7 +121,7 @@ jobs:
           -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           -H "Accept: application/vnd.github.v3+json" \
           https://api.github.com/repos/${{ github.repository }}/pulls \
-          -d '{"title": "Update Develop Branch", "head": "${{ steps.update-merge-branch.outputs.ACTUAL_MERGE_BRANCH }}", "base": "${{ env.BRANCH_TO_UPDATE }}", "body": "This pull request updates ${{ env.BRANCH_TO_UPDATE }} branch with changes from master branch."}' )
+          -d '{"title": "merge-bot: Porting hotfixes from master", "head": "${{ steps.update-merge-branch.outputs.ACTUAL_MERGE_BRANCH }}", "base": "${{ env.BRANCH_TO_UPDATE }}", "body": "This pull request updates ${{ env.BRANCH_TO_UPDATE }} branch with changes from master branch."}' )
           
           PR_NUMBER=$(echo $RESPONSE | jq -r '.number')
           echo "PR_NUMBER=$PR_NUMBER" >> "$GITHUB_OUTPUT"
@@ -132,7 +137,7 @@ jobs:
         if: ${{ steps.update-merge-branch.outputs.CONFLICTS_TO_SOLVE == 'false' }}
         run: |
           RESPONSE=$( curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.CAROL_ACCESS_TOKEN }}" \
+            -H "Authorization: Bearer ${{ secrets.THX_ACCESS_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/${{ github.repository }}/pulls/${{ steps.create-pr.outputs.PR_NUMBER }}/reviews \
             -d '{"event": "APPROVE"}' )
@@ -151,7 +156,7 @@ jobs:
         uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: merge-method:merge
-          github_token: ${{ secrets.CAROL_ACCESS_TOKEN }}
+          github_token: ${{ secrets.THX_ACCESS_TOKEN }}
           number: ${{ steps.create-pr.outputs.PR_NUMBER }}
 
       - name: Add label to the pull request to start merging process if there is no conflicts
@@ -159,32 +164,60 @@ jobs:
         uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: command:queue-for-merging
-          github_token: ${{ secrets.CAROL_ACCESS_TOKEN }}
+          github_token: ${{ secrets.THX_ACCESS_TOKEN }}
           number: ${{ steps.create-pr.outputs.PR_NUMBER }}
 
-      - name: Notify if conflicts
+      - name: Build message to notify conflicts
         if: ${{ steps.update-merge-branch.outputs.CONFLICTS_TO_SOLVE == 'true' }}
         run: |
-          RESPONSE=$(curl -X GET -H "Authorization: Bearer ${{ secrets.CAROL_ACCESS_TOKEN }}" https://api.github.com/repos/${{ github.repository }}/pulls?head=${{ env.CONFLICTED_MERGE_BRANCH }})
+          RESPONSE=$(curl -X GET -H "Authorization: Bearer ${{ secrets.THX_ACCESS_TOKEN }}" https://api.github.com/repos/${{ github.repository }}/pulls?head=${{ env.CONFLICTED_MERGE_BRANCH }})
           PR_NUMBER=$(echo $RESPONSE | jq -r '.[0].number')
           PR_URL=$(echo $RESPONSE | jq -r '.[0].html_url')
-          echo "There are conflicts in merge branch, so the pull request number $PR_NUMBER was created but not automatically merged."
-          echo "Here is the link to the PR: ${PR_URL}"
-          echo "Please solve the conflicts in the branch ${{ env.CONFLICTED_MERGE_BRANCH }} and then merge it to ${{ env.BRANCH_TO_UPDATE }} branch."
-      
-      - name: Notify if any errors
+
+          MESSAGE="There are conflicts in merge branch \`${{ env.CONFLICTED_MERGE_BRANCH }}\`, and the pull request number \`${PR_NUMBER}\` was created but can not be automatically merged into \`${{ env.BRANCH_TO_UPDATE }}\` branch."
+          MESSAGE="${MESSAGE} Please *solve the conflicts*, and follow the manual process to merge the PR."
+          
+          
+          echo "SLACK_MESSAGE=${MESSAGE}" >> "$GITHUB_ENV"
+          echo "SLACK_MESSAGE_TITLE=*Workflow Requires Attention*" >> "$GITHUB_ENV"
+          echo "WORKFLOW_STATUS=warnings" >> "$GITHUB_ENV"
+          echo "SLACK_MESSAGE_FOOTER=${{ env.SLACK_MESSAGE_FOOTER }} | <${PR_URL}|View PR ${PR_NUMBER}>" >> "$GITHUB_ENV"
+
+      - name: Build message to notify success
+        if: ${{ steps.update-merge-branch.outputs.CONFLICTS_TO_SOLVE == 'false' }}
+        run: |
+          PR_NUMBER=${{ steps.create-pr.outputs.PR_NUMBER }}
+          PR_URL="https://github.com/${{ github.repository }}/pull/${PR_NUMBER}"
+          
+          MESSAGE="Pull request was created to update develop branch with hotfixes from master branch."
+          
+          echo "SLACK_MESSAGE=${MESSAGE}" >> "$GITHUB_ENV"
+          echo "SLACK_MESSAGE_TITLE=*Workflow Succeeded*" >> "$GITHUB_ENV"
+          echo "SLACK_MESSAGE_FOOTER=${{ env.SLACK_MESSAGE_FOOTER }} | <${PR_URL}|View PR ${PR_NUMBER}>" >> "$GITHUB_ENV"
+
+      - name: Build message to notify unknown errors
         if: failure()
         run: |
-          echo "There are errors in the workflow. Please check logs."
+          MESSAGE="There are errors in the workflow. Please check logs for more details."
+          echo "SLACK_MESSAGE=${MESSAGE}" >> "$GITHUB_ENV"
+          echo "SLACK_MESSAGE_TITLE=*Workflow Failure* - Unknown Error" >> "$GITHUB_ENV"
+          echo "WORKFLOW_STATUS=failure" >> "$GITHUB_ENV"
 
-      # TODO: Create slack app and add the webhook url to secrets - https://www.ravsam.in/blog/collect-form-responses-using-google-apps-script/#creating-a-slack-bot
-      # - name: Notify issue via slack
-      #   if: failure()
-      #   uses: ravsamhq/notify-slack-action@v2
-      #   with:
-      #     status: ${{ job.status }} # required
-      #     message_format: "{emoji} *{workflow}* {status_message} in <{repo_url}|{repo}>. Please check the logs in {workflow_url}"
-      #   env:
-      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required        
-       
-       
+      - name: Notify result via slack
+        if: always()
+        id: slack
+        # documentation for this action: https://github.com/ravsamhq/notify-slack-action/tree/v2/
+        uses: ravsamhq/notify-slack-action@v2
+        with:
+          notification_title: '${{ env.SLACK_MESSAGE_TITLE }}'
+          footer: '${{ env.SLACK_MESSAGE_FOOTER }}'
+          status: ${{ env.WORKFLOW_STATUS }} # required - not using job.status as there are custom warnings
+          message_format: "{emoji} *{workflow}* {status_message} in <{repo_url}|{repo}>. \n${{ env.SLACK_MESSAGE }}"
+          notify_when: 'success,failure,warnings'
+          # Carol and Micael will be mentioned in case of failure and warnings
+          mention_users: 'U0289C8E3FE,U4L1NS68K'
+          mention_users_when: 'failure,warnings'
+          icon_warnings: ':warning:'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required 
+          
