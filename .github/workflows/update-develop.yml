@@ -108,10 +108,11 @@ jobs:
 
       - name: Push changes to merge branch if a PR can be created
         if: ${{ steps.update-merge-branch.outputs.CREATE_PR == 'true' }}
-        uses: ad-m/github-push-action@master
-        with:
-          branch: ${{ steps.update-merge-branch.outputs.ACTUAL_MERGE_BRANCH }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}          
+        run: git push --set-upstream origin ${{ steps.update-merge-branch.outputs.ACTUAL_MERGE_BRANCH }}
+        # uses: ad-m/github-push-action@master
+        # with:
+        #   branch: ${{ steps.update-merge-branch.outputs.ACTUAL_MERGE_BRANCH }}
+        #   github_token: ${{ secrets.GITHUB_TOKEN }}          
 
       - name: Create pull request
         if: ${{ steps.update-merge-branch.outputs.CREATE_PR == 'true' }}
