@@ -5,10 +5,6 @@ on:
     branches:
       - master
 
-# need to keep 2 blank lines after this permissions assignment (dont know why but without that it breaks the push step not allowing to push with github_token)
-permissions: write-all
-
-
 env:
   # branch to be updated with changes from master
   BRANCH_TO_UPDATE: develop
