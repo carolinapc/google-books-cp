@@ -16,6 +16,7 @@ jobs:
       - name: Print branch name
         run: |
           echo PR labeled in ${{ github.event.pull_request.base.ref }}
+          echo testing
           
   toggle-enable:
     needs: [check-1]
