@@ -16,13 +16,15 @@ jobs:
       - name: Print branch name
         run: |
           echo PR labeled in ${{ github.event.pull_request.base.ref }}
+          
   toggle-enable:
+    name: Toggle enable
     uses: ./.github/workflows/reusable.yml
     with:
       enable: false
 
   on-failure:
-    needs: [check-1]
+    needs: [check-1,toggle-enable]
     if: failure()
     runs-on: ubuntu-latest
     steps:
