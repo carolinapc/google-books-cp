@@ -15,4 +15,4 @@ jobs:
     - id: toggle
       run: |-
         echo "Enabled: ${{ inputs.enable }}"
-        exit 1;
+ 
