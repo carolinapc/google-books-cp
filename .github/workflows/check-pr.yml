@@ -16,6 +16,7 @@ jobs:
       - name: Print branch name
         run: |
           echo PR labeled in ${{ github.event.pull_request.base.ref }}
+          exit 1
           
   toggle-enable:
     name: Toggle enable
@@ -31,12 +32,6 @@ jobs:
       - name: job failed
         run: |
           echo Do something with the failure
-          
+
       
-  notify-on-failure:
-    needs: [on-failure]
-    runs-on: ubuntu-latest
-    steps:
-      - name: job failed
-        run: |
-          echo Notify
+      
