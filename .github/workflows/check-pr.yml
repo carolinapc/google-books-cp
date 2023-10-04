@@ -33,3 +33,10 @@ jobs:
           echo Do something with the failure
           
       
+  notify-on-failure:
+    needs: [on-failure]
+    runs-on: ubuntu-latest
+    steps:
+      - name: job failed
+        run: |
+          echo Notify
