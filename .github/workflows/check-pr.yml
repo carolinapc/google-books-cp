@@ -16,5 +16,13 @@ jobs:
       - name: Print branch name
         run: |
           echo PR labeled in ${{ github.event.pull_request.base.ref }}
+
+  on-failure:
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: job failed
+        run: |
+          echo Do something with the failure
           
       
