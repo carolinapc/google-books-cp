@@ -25,6 +25,15 @@ jobs:
     with:
       enable: false
 
+  on-success:
+    needs: [check-1,toggle-enable]
+    if: ${{ !failure() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify success via slack
+        id: slack
+        run: echo "Worflow completed sucessfully"
+        
   on-failure:
     needs: [check-1,toggle-enable]
     if: failure()
