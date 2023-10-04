@@ -19,6 +19,7 @@ jobs:
           exit 1
           
   toggle-enable:
+    needs: [check-1]
     name: Toggle enable
     uses: ./.github/workflows/reusable.yml
     with:
