@@ -19,6 +19,7 @@ jobs:
           exit 1;
 
   on-failure:
+    needs: [check-1]
     if: failure()
     runs-on: ubuntu-latest
     steps:
