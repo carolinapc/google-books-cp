@@ -16,7 +16,10 @@ jobs:
       - name: Print branch name
         run: |
           echo PR labeled in ${{ github.event.pull_request.base.ref }}
-          exit 1;
+  toggle-enable:
+    uses: ./.github/workflows/reusable.yml
+    with:
+      enable: false
 
   on-failure:
     needs: [check-1]
