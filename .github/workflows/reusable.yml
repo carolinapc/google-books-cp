@@ -1,0 +1,17 @@
+name: Reusable 
+on:
+  workflow_call:
+    inputs:
+      enable:
+        required: true
+        type: boolean
+
+permissions: write-all
+
+jobs:
+  toggle:
+    runs-on: ubuntu-latest
+    steps:
+    - id: toggle enable
+      run: |-
+        echo "Enabled: ${{ inputs.enable }}"  
