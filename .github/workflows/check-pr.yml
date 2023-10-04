@@ -32,7 +32,7 @@ jobs:
     steps:
       - name: job failed
         run: |
-          echo Do something with the failure
+          echo "Job status: ${{ job.status }}"
 
       
       
