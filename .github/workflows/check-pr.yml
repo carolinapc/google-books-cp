@@ -26,7 +26,7 @@ jobs:
       enable: false
 
   on-success:
-    needs: [check-1,toggle-enable]
+    needs: [toggle-enable,check-1]
     if: ${{ !failure() }}
     runs-on: ubuntu-latest
     steps:
@@ -35,7 +35,7 @@ jobs:
         run: echo "Worflow completed sucessfully"
         
   on-failure:
-    needs: [check-1,toggle-enable]
+    needs: [toggle-enable,check-1]
     if: failure()
     runs-on: ubuntu-latest
     steps:
