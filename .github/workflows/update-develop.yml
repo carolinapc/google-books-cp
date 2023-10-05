@@ -131,7 +131,6 @@ jobs:
           fi
 
       - name: Add label to the pull request to set merge method (merge commit)
-        if: ${{ steps.update-merge-branch.outputs.CREATE_PR == 'true' }}
         uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: merge-method:merge
