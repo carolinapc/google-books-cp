@@ -1,0 +1,25 @@
+name: Reusable 
+on:
+  workflow_call:
+    inputs:
+      enable:
+        required: true
+        type: boolean
+
+permissions: write-all
+
+jobs:
+  toggle:
+    runs-on: ubuntu-latest
+    steps:
+    - id: toggle
+      run: |-
+        echo "Enabled: ${{ inputs.enable }}"
+  job-to-fail:
+    runs-on: ubuntu-latest
+    steps:
+    - id: fail
+      run: |-
+        echo "Failure expected"
+        exit 1;
+ 
