@@ -47,7 +47,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check Status
-        run: |
+        run: |-
+          echo test
           for job in ${{ job.statuses.keys() }}; do
             echo "Job $job has status ${{ job.statuses[job] }}"
           done      
