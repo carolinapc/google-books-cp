@@ -43,5 +43,12 @@ jobs:
         run: |
           echo "Job status: ${{ job.status }}"
 
-      
+  check-status:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Status
+        run: |
+          for job in ${{ job.statuses.keys() }}; do
+            echo "Job $job has status ${{ job.statuses[job] }}"
+          done      
       
