@@ -14,4 +14,3 @@ An App built using Node.js, Express and React that searches books from the Googl
 - Mongoose
 - Socket.io
 - Bootstrap
-
