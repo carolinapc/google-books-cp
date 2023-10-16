@@ -23,6 +23,7 @@ jobs:
   update-develop:
     runs-on: ubuntu-latest
     permissions: write-all
+    environment: env1
     steps:
       - name: Info
         run: |
