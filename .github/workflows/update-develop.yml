@@ -20,6 +20,15 @@ env:
   WORKFLOW_STATUS: success
 
 jobs:
+  review-deployment:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - name: Info to review
+        run: |
+            echo Branch updated: $(basename ${{ github.ref }})
+            echo Branch to be updated: ${{ env.BRANCH_TO_UPDATE }}
+
   update-develop:
     runs-on: ubuntu-latest
     permissions: write-all
@@ -29,7 +38,6 @@ jobs:
         run: |
             echo Branch updated: $(basename ${{ github.ref }})
             echo Branch to be updated: ${{ env.BRANCH_TO_UPDATE }}
-
 
       - name: Checkout code
         uses: actions/checkout@v2
