@@ -34,6 +34,7 @@ jobs:
         with:
           ref: ${{ github.ref }}
           fetch-depth: 0
+          environment: env1
 
       - name: Configure credentials
         run: |
