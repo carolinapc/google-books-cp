@@ -23,12 +23,12 @@ jobs:
   update-develop:
     runs-on: ubuntu-latest
     permissions: write-all
-    environment: env1
     steps:
       - name: Info
         run: |
             echo Branch updated: $(basename ${{ github.ref }})
             echo Branch to be updated: ${{ env.BRANCH_TO_UPDATE }}
+
 
       - name: Checkout code
         uses: actions/checkout@v2
