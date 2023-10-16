@@ -23,6 +23,7 @@ jobs:
   update-develop:
     runs-on: ubuntu-latest
     permissions: write-all
+    environment: env1
     steps:
       - name: Info
         run: |
@@ -34,7 +35,6 @@ jobs:
         with:
           ref: ${{ github.ref }}
           fetch-depth: 0
-          environment: env1
 
       - name: Configure credentials
         run: |
