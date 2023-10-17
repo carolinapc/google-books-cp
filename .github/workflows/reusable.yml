@@ -20,7 +20,7 @@ jobs:
       run: |-
         echo "Enabled: ${{ inputs.enable }}"
     - name: testing ${{ inputs.text }}
-      if: inputs.text != ''
+      #if: inputs.text != ''
       run: |
         echo I enter here - value: ${{ inputs.text }}
         
