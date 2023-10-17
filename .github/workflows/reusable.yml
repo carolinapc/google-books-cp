@@ -21,7 +21,8 @@ jobs:
         echo "Enabled: ${{ inputs.enable }}"
     - name: testing ${{ inputs.text }}
       if: inputs.text != ''
-      run: echo I enter here
+      run: |
+        echo I enter here - value: ${{ inputs.text }}
         
   job-to-fail:
     runs-on: ubuntu-latest
