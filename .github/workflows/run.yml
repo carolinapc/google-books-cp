@@ -15,4 +15,5 @@ jobs:
     name: Testing
     uses: ./.github/workflows/reusable.yml
     with:
+      enable: false
       text: ${{ github.event.inputs.text }}
