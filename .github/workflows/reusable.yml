@@ -5,6 +5,10 @@ on:
       enable:
         required: true
         type: boolean
+      text:
+        required: false
+        type: string
+        description: type any string to test
 
 permissions: write-all
 
@@ -15,6 +19,10 @@ jobs:
     - id: toggle
       run: |-
         echo "Enabled: ${{ inputs.enable }}"
+    - name: testing ${{ inputs.text }}
+      if: inputs.text != ''
+      run: echo I enter here
+        
   job-to-fail:
     runs-on: ubuntu-latest
     steps:
