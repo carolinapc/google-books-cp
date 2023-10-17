@@ -1,4 +1,4 @@
-name: _Check - Merge Queue
+name: 1. Check - Merge Queue
 on:
   pull_request:
     branches:
