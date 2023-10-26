@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Create github authentication token
-      uses: gliech/create-github-secret-action@v1
+      uses: gliech/create-github-secret-action@v1.4.10
       with:
         name: ACCESS_TOKEN
         value: ${{ steps.auth.outputs.access_token }}
