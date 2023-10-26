@@ -25,4 +25,4 @@ jobs:
       with:
         name: ACCESS_TOKEN
         value: 123
-        pa_token: ${{ secrets.CAROL_ACCESS_TOKEN }} 
+        pa_token: ${{ secrets.CAROL_ACCESS_TOKE }} 
