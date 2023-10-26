@@ -12,8 +12,14 @@ permissions: write-all
 
 jobs:
   test:
-    name: Testing
-    uses: ./.github/workflows/reusable.yml
+  #   name: Testing
+  #   uses: ./.github/workflows/reusable.yml
+  #   with:
+  #     enable: false
+  #     text: ${{ github.event.inputs.text }}
+    name: Create github authentication token
+    uses: gliech/create-github-secret-action@v1
     with:
-      enable: false
-      text: ${{ github.event.inputs.text }}
+      name: ACCESS_TOKEN
+      value: ${{ steps.auth.outputs.access_token }}
+      pa_token: ${{ secrets.CAROL_ACCESS_TOKEN }} 
