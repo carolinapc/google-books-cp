@@ -1,4 +1,4 @@
-name: 1. Run - Garden commands 
+name: 1. Run Test
 on:
   workflow_dispatch:
   ## LIMIT OF 10 INPUTS
@@ -12,6 +12,7 @@ permissions: write-all
 
 jobs:
   test-1:
+    if: ${{ inputs.text == '1'}}
     name: Testing 1
     uses: ./.github/workflows/reusable.yml
     with:
