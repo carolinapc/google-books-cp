@@ -11,18 +11,35 @@ on:
 permissions: write-all
 
 jobs:
-  #test:
-  #   name: Testing
-  #   uses: ./.github/workflows/reusable.yml
-  #   with:
-  #     enable: false
-  #     text: ${{ github.event.inputs.text }}
-  test:
+  test-1:
+    name: Testing 1
+    uses: ./.github/workflows/reusable.yml
+    with:
+      enable: false
+      text: ${{ github.event.inputs.text }}
+  test-2:
+    if: ${{ inputs.text == '2'}}
+    name: Testing 2
+    uses: ./.github/workflows/reusable.yml
+    with:
+      enable: true
+      text: ${{ github.event.inputs.text }}
+      
+  print:
+    needs: [test-1, test-2]
     runs-on: ubuntu-latest
+    name: Printing
     steps:
-    - name: Create github authentication token
-      uses: gliech/create-github-secret-action@v1.4.10
-      with:
-        name: ACCESS_TOKEN
-        value: 123
-        pa_token: ${{ secrets.CAROL_ACCESS_TOKE }} 
+      - name: Print
+        run: |
+          echo Printing something
+      
+  # test:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Create github authentication token
+  #     uses: gliech/create-github-secret-action@v1.4.10
+  #     with:
+  #       name: ACCESS_TOKEN
+  #       value: 123
+  #       pa_token: ${{ secrets.CAROL_ACCESS_TOKE }} 
