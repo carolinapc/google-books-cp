@@ -10,7 +10,15 @@ on:
 permissions: write-all
    
 jobs:
+  check-est-hour:
+    name: Check daylight saving time
+    uses: ./.github/workflows/reusable-check-hour.yml
+    with:
+      time: 8
+      
   check-1:
+    if: ${{ needs.check-est-hour.outputs.hourMatches }}
+    needs: [check-est-hour]
     runs-on: ubuntu-latest
     steps:
       - name: Print branch name
