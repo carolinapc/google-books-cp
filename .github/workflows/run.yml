@@ -34,6 +34,15 @@ jobs:
       - name: Print
         run: |
           exit 1;
+
+  test-3:
+    needs: [test-2]
+    runs-on: ubuntu-latest
+    name: Testing 3
+    steps:
+      - name: Print
+        run: |
+          echo enter
       
   print:
     needs: [test-1, test-2]
