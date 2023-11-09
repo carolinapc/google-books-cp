@@ -20,19 +20,24 @@ jobs:
     runs-on: ubuntu-latest
     # Map the job outputs to step outputs
     outputs:
-      hour-matches: ${{steps.check-hour.outputs.hour-matches}}
+      hour-matches: ${{steps.check-hour.outputs.result}}
     steps:
       - name: 'Validate whether hour ${{ inputs.hour }} matches current hour in EST timezone'
-        id: "check-hour"
-        run: |
-          set -e
-          hour_provided=${{ inputs.hour }}
-          hour_matches=false
+        uses: actions/github-script@v6
+        id: check-hour
+        with:
+          result-encoding: string
+          script: | 
+              const date = new Date();
+              const formatter = new Intl.DateTimeFormat('en-US', {
+                hour: 'numeric',
+                hour12: false,
+                timeZone: 'Canada/Eastern'
+              });
+              const currentHour = formatter.format(date);
+              console.log(`Current EST hour: ${currentHour}`);
 
-          est_hour=$(date -d 'TZ="America/Thunder_Bay" now' +%H)
-          
-          if [[ "${est_hour}" == "${hour_provided}" ]]; then
-            hour_matches=true
-          fi
+              const result = currentHour === "${{ inputs.hour }}";
+              console.log(`result: ${result}`);
 
-          echo "hour-matches=$hour_matches" >> $GITHUB_OUTPUT  
+              return result;
