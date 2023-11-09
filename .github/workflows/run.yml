@@ -36,7 +36,7 @@ jobs:
           exit 1;
 
   test-3:
-    needs: [test-2]
+    needs: [test-1]
     runs-on: ubuntu-latest
     name: Testing 3
     steps:
