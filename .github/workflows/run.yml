@@ -12,6 +12,7 @@ permissions: write-all
 
 jobs:
   check-est-hour:
+    if: ${{ inputs.text == 'skip' }}
     name: Check daylight saving time
     uses: ./.github/workflows/reusable-check-hour.yml
     with:
