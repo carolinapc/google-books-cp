@@ -35,8 +35,8 @@ jobs:
       text: ${{ github.event.inputs.text }}
       
   test-2:
-    needs: [check-est-hour,check-est-hour-2]
-    if: ${{ inputs.text == '2' &&  (needs.check-est-hour.outputs.hourMatches == 'true' || needs.check-est-hour-2.outputs.hourMatches == 'true') }}
+    needs: [check-est-hour-2]
+    if: ${{ inputs.text == '2' &&  (needs.check-est-hour-2.outputs.hourMatches == 'true') }}
     runs-on: ubuntu-latest
     name: Testing 2
     steps:
