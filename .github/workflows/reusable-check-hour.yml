@@ -27,7 +27,7 @@ jobs:
         run: |
           set -e
           hour_provided=${{ inputs.hour }}
-          $hour_matches=false
+          hour_matches=false
 
           est_hour=$(date -d 'TZ="America/Thunder_Bay" now' +%H)
           
