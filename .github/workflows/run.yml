@@ -11,15 +11,23 @@ on:
 permissions: write-all
 
 jobs:
+  check-est-hour:
+    name: Check daylight saving time
+    uses: ./.github/workflows/reusable-check-hour.yml
+    with:
+      time: 12
+
   test-1:
-    if: ${{ inputs.text == '1'}}
+    needs: [check-est-hour]
+    if: ${{ inputs.text == '1' && needs.check-est-hour.outputs.hourMatches }}
     name: Testing 1
     uses: ./.github/workflows/reusable.yml
     with:
       enable: false
       text: ${{ github.event.inputs.text }}
+      
   test-2:
-    if: ${{ inputs.text == '2'}}
+    if: ${{ inputs.text == '2' && needs.check-est-hour.outputs.hourMatches}}
     runs-on: ubuntu-latest
     name: Testing 2
     steps:
