@@ -16,7 +16,7 @@ jobs:
     name: Check daylight saving time
     uses: ./.github/workflows/reusable-check-hour.yml
     with:
-      hour: 13
+      hour: 15
       
   check-est-hour-2:
     if: ${{ inputs.text == '2' }}
