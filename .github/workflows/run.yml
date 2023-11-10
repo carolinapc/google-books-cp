@@ -23,7 +23,7 @@ jobs:
     name: Check daylight saving time 2
     uses: ./.github/workflows/reusable-check-hour.yml
     with:
-      hour: 08
+      hour: '08'
 
   test-1:
     needs: [check-est-hour,check-est-hour-2]
