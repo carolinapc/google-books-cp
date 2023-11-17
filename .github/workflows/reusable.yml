@@ -19,9 +19,8 @@ jobs:
     - id: toggle
       run: |-
         echo "Enabled: ${{ inputs.enable }}"
-    - name: testing ${{ inputs.text }}
-      #if: inputs.text != ''
+    - name: testing 
       run: |
-        echo I enter here - value: ${{ inputs.text }}
+        echo ${{ inputs.text }}
         
   
