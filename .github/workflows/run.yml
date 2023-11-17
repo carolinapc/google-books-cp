@@ -7,7 +7,9 @@ on:
         type: string
         description: type any string
         required: false
-
+env:
+  HOUR: '08'
+  
 permissions: write-all
 
 jobs:
@@ -16,14 +18,14 @@ jobs:
     name: Check daylight saving time
     uses: ./.github/workflows/reusable-check-hour.yml
     with:
-      hour: 15
+      hour: '${{ env.HOUR }}'
       
   check-est-hour-2:
     if: ${{ inputs.text == '2' }}
     name: Check daylight saving time 2
     uses: ./.github/workflows/reusable-check-hour.yml
     with:
-      hour: '08'
+      hour: '${{ env.HOUR }}'
 
   test-1:
     needs: [check-est-hour,check-est-hour-2]
