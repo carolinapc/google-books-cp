@@ -25,23 +25,23 @@ jobs:
     name: Check daylight saving time 2
     uses: ./.github/workflows/reusable-check-hour.yml
     with:
-      hour: |-
-       [
+      hour: '08'
+      
+  test-1:
+    needs: [check-est-hour]
+    name: Testing 1
+    uses: ./.github/workflows/reusable.yml
+    with:
+      enable: false
+      text: |-
+        CUBE_GROUP_SPECIFICATION: |-
+         [
            {"GroupName": "PRD-###TARGETENV###Analytics-Unrestricted-TEST1"},
            {"GroupName": "PRD-###TARGETENV###Analytics-Unrestricted-TEST2"},
            {"GroupName": "PRD-###TARGETENV###Analytics-Restricted-TEST1"},
            {"GroupName": "PRD-###TARGETENV###Analytics-Restricted-TEST2"},
            {"GroupName": "PRD-###TARGETENV###Analytics-Restricted-TEST3"}
-       ]
-
-  test-1:
-    needs: [check-est-hour,check-est-hour-2]
-    if: ${{ inputs.text == '1' && (needs.check-est-hour.outputs.hourMatches == 'true' || needs.check-est-hour-2.outputs.hourMatches == 'true') }}
-    name: Testing 1
-    uses: ./.github/workflows/reusable.yml
-    with:
-      enable: false
-      text: ${{ github.event.inputs.text }}
+         ]
       
   test-2:
     needs: [check-est-hour-2]
