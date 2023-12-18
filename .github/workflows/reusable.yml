@@ -12,6 +12,8 @@ on:
 
 permissions: write-all
 
+env:
+  MERGE_BRANCH: merge-branch-${{ github.run_id }}
 jobs:
   toggle:
     runs-on: ubuntu-latest
@@ -19,8 +21,8 @@ jobs:
     - id: toggle
       run: |-
         echo "Enabled: ${{ inputs.enable }}"
-    - name: testing 
+    - name: merge branch name 
       run: |
-        echo ${{ inputs.text }}
+        echo ${{ env.MERGE_BRANCH }}
         
   
