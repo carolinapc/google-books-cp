@@ -1,0 +1,20 @@
+# Update develop-crm-schema branch from develop every time a commit is pushed into develop branch
+name: on push job
+on:
+  push:
+    branches:
+      - develop
+
+permissions: write-all
+
+jobs:
+  synch-1:
+    name: Synch up 1
+    uses: ./.github/workflows/reusable.yml
+    with:
+      enabled: true
+  synch-2:
+    name: Synch up 2
+    uses: ./.github/workflows/reusable.yml
+    with:
+      enabled: true
