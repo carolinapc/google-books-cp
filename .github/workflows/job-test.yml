@@ -2,7 +2,7 @@ name: Job - Test
 on:
   schedule:
     # Minute[0-59] Hour[0-23] DayOfTheMonth[1-31] MonthOfTheYear[1-12] DayOfTheWeek([0-6] with 0=Sunday)
-    - cron: '29 18 * * *'
+    - cron: '40 17 * * *'
 
 permissions: write-all
 
