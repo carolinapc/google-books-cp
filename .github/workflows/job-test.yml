@@ -3,7 +3,9 @@ on:
   schedule:
     # Minute[0-59] Hour[0-23] DayOfTheMonth[1-31] MonthOfTheYear[1-12] DayOfTheWeek([0-6] with 0=Sunday)
     - cron: '40 17 * * *'
-
+    - cron: '40 18 * * *'
+    - cron: '40 16 * * *'
+    
 permissions: write-all
 
 jobs:
