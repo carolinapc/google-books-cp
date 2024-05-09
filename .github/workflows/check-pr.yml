@@ -27,38 +27,3 @@ jobs:
               repo: context.repo.repo,
               labels: ['label']
             })          
-  toggle-enable:
-    needs: [check-1]
-    name: Toggle enable
-    uses: ./.github/workflows/reusable.yml
-    with:
-      enable: false
-
-  on-success:
-    needs: [toggle-enable,check-1]
-    if: ${{ !failure() }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Notify success via slack
-        id: slack
-        run: echo "Worflow completed sucessfully"
-        
-  on-failure:
-    needs: [toggle-enable,check-1]
-    if: failure()
-    runs-on: ubuntu-latest
-    steps:
-      - name: job failed
-        run: |
-          echo "Job status: ${{ job.status }}"
-
-  check-status:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check Status
-        run: |-
-          echo test
-          for job in ${{ job.statuses.keys() }}; do
-            echo "Job $job has status ${{ job.statuses[job] }}"
-          done      
-      
