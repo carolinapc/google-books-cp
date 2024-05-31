@@ -6,9 +6,10 @@ on:
       text:
         type: string
         description: type any string
+        default: dev
         required: false
 env:
-  NAME: test-${{ inputs.text }}
+  PREFIX: test-${{ inputs.text }}
   
 permissions: write-all
 
@@ -18,7 +19,7 @@ jobs:
     name: Testing
     steps:
       - name: Format
-        run: echo "DEPLOY_BRANCH=${env.NAME}-$(date +'%Y-%m-%d')-${{ github.run_number }}" >> $GITHUB_ENV
+        run: echo "DEPLOY_BRANCH=${env.PREFIX}-$(date +'%Y-%m-%d')-${{ github.run_number }}" >> $GITHUB_ENV
 
       - name: Print
         run: echo $DEPLOY_BRANCH
