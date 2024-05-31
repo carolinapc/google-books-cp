@@ -19,7 +19,7 @@ jobs:
     name: Testing
     steps:
       - name: Format
-        run: echo "DEPLOY_BRANCH=${env.PREFIX}-$(date +'%Y-%m-%d')-${{ github.run_number }}" >> $GITHUB_ENV
+        run: echo "DEPLOY_BRANCH=${PREFIX}-$(date +'%Y-%m-%d')-${{ github.run_number }}" >> $GITHUB_ENV
 
       - name: Print
         run: echo $DEPLOY_BRANCH
