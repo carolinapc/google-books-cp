@@ -8,7 +8,7 @@ on:
         description: type any string
         required: false
 env:
-  NAME: ${{ github.event.workflow.created_at }}
+  NAME: test-${{ inputs.text }}-${{ github.event.workflow_dispatch.created_at }}
   
 permissions: write-all
 
