@@ -8,7 +8,7 @@ on:
         description: type any string
         required: false
 env:
-  NAME: ${{ format('{0:yyyy-MM-dd}', github.event.workflow_run.created_at) }}
+  NAME: ${{ github.event.workflow_run.created_at }}
   
 permissions: write-all
 
