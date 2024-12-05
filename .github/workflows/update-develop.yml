@@ -20,9 +20,19 @@ env:
   WORKFLOW_STATUS: success
 
 jobs:
+  review-deployment:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - name: Info to review
+        run: |
+            echo Branch updated: $(basename ${{ github.ref }})
+            echo Branch to be updated: ${{ env.BRANCH_TO_UPDATE }}
+
   update-develop:
     runs-on: ubuntu-latest
     permissions: write-all
+    environment: env1
     steps:
       - name: Info
         run: |
@@ -116,7 +126,7 @@ jobs:
         if: ${{ steps.update-merge-branch.outputs.CONFLICTS_TO_SOLVE == 'false' }}
         run: |
           RESPONSE=$( curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.THX_ACCESS_TOKEN }}" \
+            -H "Authorization: Bearer ${{ secrets.CAROL_ACCESS_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/${{ github.repository }}/pulls/${{ steps.create-pr.outputs.PR_NUMBER }}/reviews \
             -d '{"event": "APPROVE"}' )
@@ -131,11 +141,10 @@ jobs:
           fi
 
       - name: Add label to the pull request to set merge method (merge commit)
-        if: ${{ steps.update-merge-branch.outputs.CREATE_PR == 'true' }}
         uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: merge-method:merge
-          github_token: ${{ secrets.THX_ACCESS_TOKEN }}
+          github_token: ${{ secrets.CAROL_ACCESS_TOKEN }}
           number: ${{ steps.create-pr.outputs.PR_NUMBER }}
 
       - name: Add label to the pull request to start merging process if there is no conflicts
@@ -143,7 +152,7 @@ jobs:
         uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: command:queue-for-merging
-          github_token: ${{ secrets.THX_ACCESS_TOKEN }}
+          github_token: ${{ secrets.CAROL_ACCESS_TOKEN }}
           number: ${{ steps.create-pr.outputs.PR_NUMBER }}
 
       - name: Build message to notify conflicts
